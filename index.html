@@ -7,6 +7,23 @@
 <script src="exam_images.js"></script>
 <script src="sol_images.js"></script>
 <script src="sol_precise.js"></script>
+<!-- MathJax für LaTeX-Formeln -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    tags: 'none',
+  },
+  options: {
+    skipHtmlTags: ['script','noscript','style','textarea','pre']
+  },
+  startup: {
+    typeset: false  // wir rufen manuell auf nach DOM-Updates
+  }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js" crossorigin="anonymous"></script>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -231,6 +248,25 @@ svg#lines { position:absolute; inset:0; width:100%; height:100%; pointer-events:
 
 /* ── SOLUTION IMAGES ── */
 .sol-images { margin-bottom:8px; }
+
+/* ── MathJax / LaTeX styling ── */
+mjx-container {
+  color: var(--text) !important;
+  overflow-x: auto;
+  max-width: 100%;
+}
+mjx-container[display="true"] {
+  margin: 8px 0 !important;
+  padding: 4px 0;
+}
+.sol-text mjx-container,
+.result-box mjx-container,
+.q-box mjx-container,
+.ec-label mjx-container,
+.ev-title mjx-container {
+  font-size: 1.05em;
+}
+
 @media(max-width:600px){
   .site-header{padding:16px 20px 14px}
   .tip{padding:7px 20px}
@@ -293,18 +329,18 @@ const TREE = [
         desc:'Globalverhalten, Symmetrie, Nullstellen, HoP/TiP/TeP, Wendepunkte, Monotonie',
         exams: [
           { year:'2025', section:'Teil 2 – Analysis II', imgKey:'2025_t2_analysis2',
-            title:'f(x)=–⅛(x⁴–6x²+8x) – vollst. Kurvendiskussion', pts:'26 BE',
+            title:'$f(x)=-\frac{1}{8}(x^4-6x^2+8x)$ – vollst. Kurvendiskussion', pts:'26 BE',
             steps:[
               `Globalverhalten: führender Term –⅛x⁴\nx→±∞: f(x)→–∞`,
               `f'(x)=–½(x³–3x+2)=–½(x–1)²(x+2)=0\n→ x₁=1 (doppelt), x₂=–2`,
               `f''(x)=–½(3x²–3)\nf''(1)=0 → Terrassenpunkt T(1|–3/8)\nf''(–2)=–4,5<0 → Hochpunkt H(–2|3)`,
-              `Wendepunkte: f''(x)=0 → x=±1\nW₁(1|–3/8), W₂(–1|13/8)\nProbe: Gerade g(x)=–x+5/8 geht durch beide ✓`,
+              `Wendepunkte: $f''(x)=0$ $\Rightarrow x=\pm 1$\nW₁(1|–3/8), W₂(–1|13/8)\nProbe: Gerade g(x)=–x+5/8 geht durch beide ✓`,
               `Fläche [–1;1] zw. Gf und Gg:\nA=[x⁵/40–x³/4+7x²/16+5x/8]₋₁¹ = 5/4`
             ],
             result:'T(1|–3/8) · H(–2|3) · W₁(1|–3/8) · W₂(–1|13/8) · Fläche=1,25 FE'
           },
           { year:'2024', section:'Teil 2 – Analysis I', imgKey:'2024_t2_analysis1', solKey:'sol_2024_t2_ana1_extrem',
-            title:'f(x)=–½x⁴–2x³–2x² – Extrempunkte & Fläche', pts:'24 BE',
+            title:'$f(x)=-\frac{1}{2}x^4-2x^3-2x^2$ – Extrempunkte & Fläche', pts:'24 BE',
             steps:[
               `f(x)=–½x²(x+2)² → Nullstellen: x=0 (2-fach), x=–2 (2-fach)`,
               `f'(x)=–2x(x+1)(x+2)=0 → x=0,–1,–2\nf''(0)=–4<0 → H(0|0)\nf''(–1)=2>0 → T(–1|–½)\nf''(–2)=–4<0 → H(–2|0)`,
@@ -314,9 +350,9 @@ const TREE = [
             result:'H(0|0) · T(–1|–½) · H(–2|0) · Fläche=32/5=6,4 FE'
           },
           { year:'2022', section:'Teil 2 – Analysis I', imgKey:'2022_t2_analysis1',
-            title:'f(x)=–⅛x⁴+2x² – Kurvendiskussion & Wolfsrudel', pts:'43 BE',
+            title:'$f(x)=-\frac{1}{8}x^4+2x^2$ – Kurvendiskussion & Wolfsrudel', pts:'43 BE',
             steps:[
-              `f'(x)=–½x³+4x=–½x(x²–8)=0 → x=0, x=±2√2`,
+              `f'(x)=–½x³+4x=–½x(x²–8)=0 $\Rightarrow x=0,\; x=\pm 2$√2`,
               `f''(x)=–3/2x²+4\nf''(0)=4>0 → T(0|0)\nf''(±2√2)=–8<0 → H(±2√2|4)`,
               `Wendestellen: f''=0 → x=±√(8/3)=±2√6/3`,
               `Tangente an x=–2: f'(–2)=4–8·(–½)... [s. Originalaufgabe]`,
@@ -350,26 +386,26 @@ const TREE = [
         desc:'f(x)=a·bˣ (allg.) | f(x)=a·e^(c(x–d))+y₀ | Verschiebungen | Ketten-/Produktregel',
         exams: [
           { year:'2025', section:'Teil 2 – Analysis I', imgKey:'2025_t2_analysis1',
-            title:'Bienenvolk N(t)=2t²·e^(–0,125t–0,2)+5 · f(x)=⅟₁₄(x³–12x²+36x+49)', pts:'43 BE',
+            title:'Bienenvolk $N(t)=2t^2 \cdot e^{-0{,}125t-0{,}2}+5$ · $f(x)=\frac{1}{14}(x^3-12x^2+36x+49)$', pts:'43 BE',
             steps:[
               `N(0)=5 → 5.000 Bienen\nN(5)=50·e^(–0,825)+5≈26,9 → ca. 26.900 Bienen`,
-              `Ṅ(t)=e^(–0,125t–0,2)·(–0,25t²+4t)=0\n→ t=16 Wochen: N(16)≈61.700 Bienen (absolutes Maximum)`,
+              `Ṅ(t)=e^(–0,125t–0,2)·(–0,25t²+4t)=0\n$\Rightarrow t=16$ Wochen: N(16)≈61.700 Bienen (absolutes Maximum)`,
               `Wendepunkt tW≈4,7: Wachstumsrate nimmt ab → stärkste Wachstumsphase\nṄ(4,7)≈6,04: ~6.040 Bienen/Woche Wachstum`,
-              `f(x)=⅟₁₄(x³–12x²+36x+49): Nullstellen über f'=0\nh(x)=x·e^(x–2): Tangente bei x=2\nh'(x)=e^(x–2)(1+x) → h'(2)=3 → t(x)=3x–4`
+              `$f(x)=\frac{1}{14}(x^3-12x^2+36x+49)$: Nullstellen über f'=0\n$h(x)=x \cdot e^{x-2}$: Tangente bei x=2\nh'(x)=e^(x–2)(1+x) → h'(2)=3 → $t(x)=3x-4$`
             ],
-            result:'N_max≈61.700 nach 16 Wochen · Tangente h: t(x)=3x–4'
+            result:'N_max≈61.700 nach 16 Wochen · Tangente h: $t(x)=3x-4$'
           },
           { year:'2024', section:'Teil 2 – Analysis I', imgKey:'2024_t2_analysis1', solKey:'sol_2024_t2_ana1_alu',
-            title:'Aluminiumhütte T(t)=250·t·e^(–0,1t)+22', pts:'19 BE',
+            title:'Aluminiumhütte $T(t)=250 \cdot t \cdot e^{-0{,}1t}+22$', pts:'19 BE',
             steps:[
               `T(5)=1250·e^(–0,5)+22≈780°C\nT(∞)=22°C (Raumtemperatur)`,
-              `Ṫ(t)=e^(–0,1t)(250–25t)=0 → t=10 min\nT(10)=2500·e^(–1)+22≈942°C → Temperaturmaximum`,
+              `Ṫ(t)=e^(–0,1t)(250–25t)=0 $\Rightarrow t=10\,\text{min}$\nT(10)=2500·e^(–1)+22≈942°C → Temperaturmaximum`,
               `Ṫ(20)=e^(–2)·(–250)≈–33,8°C/min\nBedeutung: Abkühlung mit 33,8°C pro Minute nach 20 min`
             ],
             result:'T(5)≈780°C · T_max≈942°C bei t=10 min · Ṫ(20)≈–33,8°C/min'
           },
           { year:'2023', section:'Teil 1 – Analysis', imgKey:'2023_t1_analysis',
-            title:'(eˣ)²–25=0 · Parameter d,y₀ der Exponentialfunktion', pts:'8 BE',
+            title:'$(e^x)^2-25=0$ · Parameter d,y₀ der Exponentialfunktion', pts:'8 BE',
             steps:[
               `(eˣ)²=25 → eˣ=5 (da eˣ>0) → x=ln(5)≈1,609`,
               `Asymptote von h: y₀=–1\nEinsetzen P(0,5|2): 2=e^(0,5+d)–1 → e^(0,5+d)=3\nd=ln(3)–0,5≈0,599`,
@@ -378,7 +414,7 @@ const TREE = [
             result:'x=ln(5)≈1,61 · d≈0,60 · y₀=–1 · Integral > 0: WAHR'
           },
           { year:'2022', section:'Teil 1 – Analysis', imgKey:'2022_t1_analysis',
-            title:'Bakterienpopulation B(t)=2·10⁶·(½)ᵗ – Gleichungen lösen', pts:'12 BE',
+            title:'Bakterienpopulation $B(t)=2 \cdot 10^6 \cdot (\frac{1}{2})^t$ – Gleichungen lösen', pts:'12 BE',
             steps:[
               `a) x³–2x²+x=x(x–1)²=0 → x=0 (einfach), x=1 (doppelt)`,
               `b) (eˣ–2)²–4=0 → eˣ–2=±2\neˣ=4 → x=ln(4)≈1,386\neˣ=0: keine Lösung (eˣ>0)`,
@@ -396,7 +432,7 @@ const TREE = [
             result:'Tabelle 1: A) 8–3^(0,5x) · Tabelle 2: C) 3^(0,5x)+6 · h(4)=–1 · k(0)=7'
           },
           { year:'2020', section:'Teil 2 – Analysis II', imgKey:'2020_t2_analysis2',
-            title:'g(x)=2–5e^(–0,1x²) – Symmetrie, Extrempunkt, Tangente', pts:'21 BE',
+            title:'$g(x)=2-5e^{-0{,}1x^2}$ – Symmetrie, Extrempunkt, Tangente', pts:'21 BE',
             steps:[
               `g(–x)=2–5e^(–0,1x²)=g(x) → achsensymmetrisch zur y-Achse\nGrenzwert: g(x)→2 für |x|→∞ → Asymptote y=2`,
               `Nullstellen: 2–5e^(–0,1x²)=0 → e^(–0,1x²)=0,4\n–0,1x²=ln(0,4) → x=±√(–10·ln(0,4))≈±3,02`,
@@ -421,27 +457,27 @@ const TREE = [
             result:'h=15 cm (Randmax.) · V_max=6500π≈20.420 cm³ · Durchmesser=60 cm'
           },
           { year:'2024', section:'Teil 2 – Analysis II', imgKey:'2024_t2_analysis2', solKey:'sol_2024_t2_ana2_opt',
-            title:'Tauchflasche (Zylinder+Halbkugel) – V(r)=–5/6πr³+4πr', pts:'10 BE',
+            title:'Tauchflasche (Zylinder+Halbkugel) – $V(r)=-\frac{5}{6}\pi r^3+4\pi r$', pts:'10 BE',
             steps:[
-              `V(r)=–5/6πr³+4πr [zeigen mit h=4/r–3r/2]`,
+              `$V(r)=-\frac{5}{6}\pi r^3+4\pi r$ [zeigen mit h=4/r–3r/2]`,
               `V'(r)=–5/2πr²+4π=0 → r²=8/5 → r=√(8/5)≈1,265 dm\nIn [0,85;1,4]: r≈1,27 dm ist Maximum`,
               `V(1,27)≈–5/6π·2,04+4π·1,27≈–5,34+15,96≈10,62 dm³`
             ],
             result:'Optimaler Radius r≈1,27 dm · V_max≈10,62 dm³'
           },
           { year:'2023', section:'Teil 2 – Analysis I', imgKey:'2023_t2_analysis1',
-            title:'Delfin T(t) + Delfinbecken V(r)=–π/2r³+90πr + Algenteppich', solKey:'', pts:'11 BE',
+            title:'Delfin T(t) + Delfinbecken $V(r)=-\frac{\pi}{2}r^3+90\pi r$ + Algenteppich', solKey:'', pts:'11 BE',
             steps:[
               `Fläche: πr²+2πrh=180π → h=(180–r²)/(2r)\nV=πr²h=–π/2r³+90πr ✓`,
-              `V'(r)=–3π/2r²+90π=0 → r²=60 → r=2√15≈7,75 m\nV''<0 → Maximum ✓`,
+              `V'(r)=–3π/2r²+90π=0 → r²=60 $\Rightarrow r=2\sqrt{15}$≈7,75 m\nV''<0 → Maximum ✓`,
               `V(2√15)=120π√15≈1.459 m³\nPro Delfin 360 m³ → 3 Delfine brauchen 1.080 m³ < 1.459 → reicht aus!`
             ],
             result:'r=2√15≈7,75 m · V_max=120π√15≈1.459 m³ · Reicht für 3 Delfine ✓'
           },
           { year:'2022', section:'Teil 2 – Analysis I', imgKey:'2022_t2_analysis1',
-            title:'Tropenhaus (Quader+Halbzylinder) – V(r)=600r–0,9πr³', pts:'13 BE',
+            title:'Tropenhaus (Quader+Halbzylinder) – $V(r)=600r-0{,}9\pi r^3$', pts:'13 BE',
             steps:[
-              `A=10rh+4πr²=1000 → h=(1000–4πr²)/(10r)\nV=6r²h+π/2r²·3r... [s. Angabe] → V(r)=600r–0,9πr³ ✓`,
+              `A=10rh+4πr²=1000 → h=(1000–4πr²)/(10r)\nV=6r²h+π/2r²·3r... [s. Angabe] → $V(r)=600r-0{,}9\pi r^3$ ✓`,
               `V'(r)=600–2,7πr²=0 → r²=600/(2,7π) → r≈8,41 m\nr∈[4;8,5] → r=8,41 ist Maximum`,
               `V(8,41)≈600·8,41–0,9π·595≈5046–1683≈3363 m³`
             ],
@@ -472,9 +508,9 @@ const TREE = [
         desc:'Funktionsterm aus gegebenen Eigenschaften bestimmen (Kurvendiskussion rückwärts)',
         exams: [
           { year:'2024', section:'Teil 2 – Analysis II', imgKey:'2024_t2_analysis2', solKey:'sol_2024_t2_ana2_steck',
-            title:'f(x)=⅛(x³–7x²+8x+16) – Tangente, kein m=–2, Wendepunkt', pts:'10 BE',
+            title:'$f(x)=\frac{1}{8}(x^3-7x^2+8x+16)$ – Tangente, kein m=–2, Wendepunkt', pts:'10 BE',
             steps:[
-              `Aus Graph: f(0)=2, f hat Nullstellen bei x=–2 (einfach) und x=4 (doppelt)\nf(x)=⅛(x³–7x²+8x+16) [laut Angabe]`,
+              `Aus Graph: f(0)=2, f hat Nullstellen bei x=–2 (einfach) und x=4 (doppelt)\n$f(x)=\frac{1}{8}(x^3-7x^2+8x+16)$ [laut Angabe]`,
               `Tangente bei P(0|2): f'(x)=⅛(3x²–14x+8), f'(0)=1\nt(x)=x+2`,
               `f'(x)=–2: ⅛(3x²–14x+8)=–2 → 3x²–14x+24=0\nDiskrimin.=196–288=–92<0 → keine Lösung → m=–2 unmöglich ✓`,
               `Wendepunkt: f''(x)=⅛(6x–14)=0 → x=7/3\nf(7/3)=⅛·(343/27–49·7/9+56/3+16)=125/108\nW(7/3|125/108)`
@@ -482,7 +518,7 @@ const TREE = [
             result:'Tangente t(x)=x+2 · m=–2 unmöglich · W(7/3|125/108)'
           },
           { year:'2023', section:'Teil 2 – Analysis II', imgKey:'2023_t2_analysis2',
-            title:'f(x)=ax³+bx²–0,9x+c, dann g=–0,025(x³–12x²+36x–80)', solKey:'', pts:'6 BE',
+            title:'$f(x)=ax^3+bx^2-0{,}9x+c$, dann g=–0,025(x³–12x²+36x–80)', solKey:'', pts:'6 BE',
             steps:[
               `f(0)=c=2 → c=2\nf'(x)=3ax²+2bx–0,9\nExtremstelle bei x=2: f'(2)=12a+4b–0,9=0 → 12a+4b=0,9`,
               `Extrempunkt E(2|1,2): 8a+4b–1,8+2=1,2 → 8a+4b=1\nAus beiden: (12a+4b)–(8a+4b)=0,9–1 → 4a=–0,1 → a=–0,025\n4b=1–8·(–0,025)=1,2 → b=0,3`,
@@ -491,9 +527,9 @@ const TREE = [
             result:'a=–0,025 · b=0,3 · c=2'
           },
           { year:'2021', section:'Teil 2 – Analysis I', imgKey:'2021_t2_analysis1', solKey:'sol_2021_t2_ana1_kurve',
-            title:'f(x)=ax³+bx+c aus Wendepunkt & Tangentengleichung', pts:'6 BE',
+            title:'$f(x)=ax^3+bx+c$ aus Wendepunkt & Tangentengleichung', pts:'6 BE',
             steps:[
-              `WP im Schnittpunkt mit y-Achse: x=0 ist Wendestelle → f''(0)=0\nf(x)=ax³+bx+c → f''(x)=6ax → 6a·0=0 ✓ (für alle a)`,
+              `WP im Schnittpunkt mit y-Achse: x=0 ist Wendestelle → f''(0)=0\n$f(x)=ax^3+bx+c$ → f''(x)=6ax → 6a·0=0 ✓ (für alle a)`,
               `Wendetangente t: y=2x+1 → f'(0)=b=2 und f(0)=c=1`,
               `P(–1|0,5): f(–1)=–a–2+1=0,5 → –a=1,5 → a=–1,5\nf(x)=–1,5x³+2x+1 [Teilergebnis bestätigt]`
             ],
@@ -506,9 +542,9 @@ const TREE = [
         desc:'Stammfunktion · Fläche zw. Graph & x-Achse · Fläche zw. zwei Graphen · Flächenbilanz',
         exams: [
           { year:'2024', section:'Teil 1 – Analysis', imgKey:'2024_t1_analysis', solKey:'sol_2024_t1_ana_fläche',
-            title:'Fläche unter p(x)=–x²+1 · Nullstellen & Ableitung lesen', pts:'13 BE',
+            title:'Fläche unter $p(x)=-x^2+1$ · Nullstellen & Ableitung lesen', pts:'13 BE',
             steps:[
-              `Nullstellen: –x²+1=0 → x=±1\nA=∫₋₁¹(–x²+1)dx=[–x³/3+x]₋₁¹\n=(–1/3+1)–(1/3–1)=2/3+2/3=4/3≈1,33 FE`,
+              `Nullstellen: –x²+1=0 $\Rightarrow x=\pm 1$\nA=∫₋₁¹(–x²+1)dx=[–x³/3+x]₋₁¹\n=(–1/3+1)–(1/3–1)=2/3+2/3=4/3≈1,33 FE`,
               `k(x)=0,5(x–3)²(2x+4/3): Nullstellen x=3 (2-fach), x=–2/3 (einfach)\nHochpunkt-x liegt in ]–2/3; 3[`,
               `g(x)=2eˣ–1 und h(x)=e^(2x):\n2u–1=u² (u=eˣ) → (u–1)²=0 → u=1 → x=0\nP(0|1)`,
               `j(x)=–2eˣ+3 [Spiegelung+Verschiebung]`
@@ -525,7 +561,7 @@ const TREE = [
             result:'∫=4 (orientierter Flächeninhalt) · k<1/2'
           },
           { year:'2021', section:'Teil 2 – Analysis II', imgKey:'2021_t2_analysis2', solKey:'sol_2021_t2_ana2_ganzrat',
-            title:'f(x)=⅟₁₂(x⁴–20x²+64) – Fläche + Tetra-Pak Optimierung', pts:'24 BE',
+            title:'$f(x)=\frac{1}{12}(x^4-20x^2+64)$ – Fläche + Tetra-Pak Optimierung', pts:'24 BE',
             steps:[
               `Nullstellen: x⁴–20x²+64=0 → u²–20u+64=0 (u=x²)\nu=(20±√(400–256))/2=10±6 → u=16 oder u=4\nx=±4, x=±2`,
               `Extrempunkte (f'=0): f'(x)=⅟₁₂(4x³–40x)=⅟₃x(x²–10)\n→ x=0, x=±√10\nf(0)=64/12≈5,33 → Hochp. H(0|16/3)\nf(±√10)=⅟₁₂(100–200+64)=–3 → Tiefp. T(±√10|–3)`,
@@ -589,7 +625,7 @@ const TREE = [
             result:'E₁=B∩Ā · P(E₃)=0,64 · P(E₄)=0,96 · 2. Los gleiche Chance: 2/5 ✓'
           },
           { year:'2021', section:'Teil 1 – Stochastik', imgKey:'2021_t1_stochastik', solKey:'sol_2021_t1_sto_baum',
-            title:'Laplace-Würfel · P(A)=2/3, P(A∩B)=0, P(A∪B)=4/9 · Glücksrad', pts:'12 BE',
+            title:'Laplace-Würfel · $P(\bar{A})=\frac{2}{3},\; P(A\cap B)=0,\; P(A\cup B)=\frac{4}{9}$ · Glücksrad', pts:'12 BE',
             steps:[
               `E={1,1;1,2;2,1} → P(E)=3/36=1/12`,
               `P(B): P(A∪B)=P(A)+P(B)–P(A∩B)\n4/9=1/3+P(B)–0 → P(B)=4/9–3/9=1/9`,
@@ -701,7 +737,7 @@ const TREE = [
             result:'a=0,30 · b=0,20 · Faires Spiel mit E(X)=0 bestätigt'
           },
           { year:'2022', section:'Teil 2 – Stochastik II', imgKey:'2022_t2_stochastik2',
-            title:'Zufallsgröße X mit a,b – E(X)=1,7 – Standardabweichung', pts:'7 BE',
+            title:'Zufallsgröße X mit a,b – $E(X)=1{,}7$ – Standardabweichung', pts:'7 BE',
             steps:[
               `Σ P=1: a+2b+b+0,1+0,1+0,04=1 → a+3b=0,76\nE(X)=0·a+1·2b+2·b+3·0,1+4·0,1+5·0,04\n=2b+2b+0,3+0,4+0,2=4b+0,9=1,7 → b=0,2`,
               `a=0,76–3·0,2=0,16\nWahrscheinlichkeitsverteilung: P(0)=0,16; P(1)=0,40; P(2)=0,20; P(3)=0,10; P(4)=0,10; P(5)=0,04`,
@@ -710,13 +746,13 @@ const TREE = [
             result:'a=0,16 · b=0,20 · σ≈1,345 · P(in σ-Umgebung)=0,70=70%'
           },
           { year:'2021', section:'Teil 2 – Stochastik II', imgKey:'2021_t2_stochastik2', solKey:'sol_2021_t2_sto2_zufall',
-            title:'Schreiner Zufallsgröße – E(X)=3,12, Lieferzeiten', pts:'10 BE',
+            title:'Schreiner Zufallsgröße – $E(X)=3{,}12$, Lieferzeiten', pts:'10 BE',
             steps:[
               `Σ P=1: a+(b–a)+0,2+b+0,08+0,02=1 → b+0,30=1–... → a+3b=...\nE(X)=1·a+2·(b–a)+3·0,2+4·b+5·0,08+6·0,02=3,12\nTeilergebnis: a=0,1 → b=...`,
               `E₁=P(X≤4)=a+(b–a)+0,2+b=0,1+0,3+0,2+0,2=0,80`,
               `E₂=C(9;3)·P(X=1)³·P(X≥2)⁶\nE₃=P(X≤5)⁹·P(X=6)=0,98⁹·0,02`
             ],
-            result:'a=0,1 · b=0,2 · E(X)=3,12 · P(E₁)=0,80'
+            result:'a=0,1 · b=0,2 · $E(X)=3{,}12$ · P(E₁)=0,80'
           },
           { year:'2020', section:'Teil 2 – Stochastik I', imgKey:'2020_t2_stochastik1',
             title:'Schokolade X~Gewicht, σ-Umgebung berechnen', pts:'7 BE',
@@ -731,12 +767,12 @@ const TREE = [
       },
       {
         id:'sto-binom', label:'Bernoulli &\nBinomialverteilung',
-        desc:'X~B(n;p) · P(X=k) genau · P(X≤k) höchstens · P(X≥k) mindestens · kleinstes n',
+        desc:'$X \sim B(n;p)$ · $P(X=k)$ genau · P(X≤k) höchstens · P(X≥k) mindestens · kleinstes n',
         exams: [
           { year:'2025', section:'Teil 2 – Stochastik I', imgKey:'2025_t2_stochastik1',
             title:'Losbude 20% – Höchstens/Mindestens, kleinstes n', pts:'10 BE',
             steps:[
-              `X~B(n;0,2)\nE₁ (25 Lose, ≤3): P(X≤3)=Σ P(X=k) k=0..3 ≈0,2340`,
+              `X~B(n;0,2)\nE₁ (25 Lose, ≤3): P(X≤3)=Σ $P(X=k)$ k=0..3 ≈0,2340`,
               `E₂ (30 Lose, >E(X)=6): P(X>6)=1–P(X≤6)≈1–0,607=0,393`,
               `E₃ (10 Lose, genau 3 nacheinander): P=0,8⁷·0,2³·8 [8 mögliche Positionen für 3 in Folge]\noder Baumdiagramm`,
               `P(mind. 1 Gewinn)≥0,95: 1–0,8ⁿ≥0,95 → n≥ln(0,05)/ln(0,8)≈13,4 → n=14`
@@ -778,7 +814,7 @@ const TREE = [
             steps:[
               `X~B(200;0,25); E(X)=50, σ=√(200·0,25·0,75)=√37,5≈6,12`,
               `a) P(nicht ausreichend): P(X>50)=1–P(X≤50)≈0,5 (ca. 50%, da 50=E(X))\nGenauer: P(X≥51)=1–P(X≤50)`,
-              `b) P(E–σ≤X≤E+σ)=P(43,88≤X≤56,12)=P(44≤X≤56)\n=Σ P(X=k) k=44..56`
+              `b) P(E–σ≤X≤E+σ)=P(43,88≤X≤56,12)=P(44≤X≤56)\n=Σ $P(X=k)$ k=44..56`
             ],
             result:'P(X>50)≈50% · P(43≤X≤57) aus Binomialtabelle'
           },
@@ -1293,6 +1329,7 @@ function toggleSolution(btn){
   const box=btn.nextElementSibling;
   box.classList.toggle('open');
   btn.textContent=box.classList.contains('open') ? '▼ Lösung ausblenden' : '▶ Lösung anzeigen';
+  if(box.classList.contains('open')) renderMath();
 }
 
 function goBack(){
@@ -1335,6 +1372,14 @@ function openPanel(){
   document.getElementById('panel').classList.add('open');
   document.getElementById('overlay').classList.add('on');
   document.getElementById('p-body').scrollTop=0;
+  // Re-render LaTeX after content is injected
+  renderMath();
+}
+
+function renderMath() {
+  if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+    MathJax.typesetPromise([document.getElementById('p-body')]).catch(e => console.log('MathJax:', e));
+  }
 }
 
 function closePanel(){
