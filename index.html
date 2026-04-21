@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FOS 12 Mathematik Bayern – Abitur Mindmap</title>
+<script src="exam_images.js"></script>
+<script src="sol_images.js"></script>
+<script src="sol_precise.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0f14;
+  --surface: #13161e;
+  --card: #181c27;
+  --border: #252a38;
+  --border2: #2e3448;
+  --ana: #e8a838;
+  --sto: #3ec9a7;
+  --text: #e8ecf4;
+  --muted: #6b7494;
+  --dim: #3a4060;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+/* ── HEADER ── */
+.site-header {
+  position: relative; z-index: 10;
+  padding: 24px 40px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border); gap: 16px; flex-wrap: wrap;
+}
+.logo-main { font-family:'Instrument Serif',serif; font-size:1.6rem; color:var(--text); letter-spacing:-0.02em; line-height:1; }
+.logo-sub { font-size:0.6rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); margin-top:2px; }
+.header-pills { display:flex; gap:6px; flex-wrap:wrap; }
+.pill { font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; padding:3px 10px; border-radius:20px; border:1px solid var(--border2); color:var(--muted); }
+.pill.ana { border-color:rgba(232,168,56,0.4); color:var(--ana); background:rgba(232,168,56,0.06); }
+.pill.sto { border-color:rgba(62,201,167,0.4); color:var(--sto); background:rgba(62,201,167,0.06); }
+/* ── TIP ── */
+.tip { position:relative; z-index:10; padding:8px 40px; background:var(--surface); border-bottom:1px solid var(--border); font-size:0.68rem; letter-spacing:0.05em; color:var(--muted); }
+.tip span { color:var(--text); }
+/* ── MAP ── */
+#map { position:relative; width:100%; height:calc(100vh - 100px); min-height:600px; overflow:hidden; }
+svg#lines { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:1; overflow:visible; }
+/* ── CENTER ── */
+.node-center {
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  z-index:20; width:116px; height:116px; border-radius:50%;
+  background:linear-gradient(135deg,#1e2438,#252d45);
+  border:2px solid var(--border2);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+  box-shadow:0 0 0 8px rgba(255,255,255,0.02),0 16px 50px rgba(0,0,0,0.5);
+}
+.nc-title { font-family:'Instrument Serif',serif; font-size:1rem; color:var(--text); line-height:1.1; }
+.nc-sub { font-size:0.52rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); margin-top:4px; }
+/* ── BRANCH NODES ── */
+.node-branch { position:absolute; z-index:15; transform:translate(-50%,-50%); cursor:grab; user-select:none; touch-action:none; }
+.node-branch.dragging, .node-branch:active { cursor:grabbing; }
+.nb-inner { padding:13px 20px; border-radius:40px; border:1.5px solid; font-family:'Instrument Serif',serif; font-size:1rem; text-align:center; transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1); backdrop-filter:blur(8px); white-space:nowrap; pointer-events:none; }
+.node-branch.ana .nb-inner { background:rgba(232,168,56,0.1); border-color:rgba(232,168,56,0.5); color:var(--ana); box-shadow:0 0 30px rgba(232,168,56,0.1); }
+.node-branch.sto .nb-inner { background:rgba(62,201,167,0.1); border-color:rgba(62,201,167,0.5); color:var(--sto); box-shadow:0 0 30px rgba(62,201,167,0.1); }
+.node-branch:hover .nb-inner { transform:scale(1.06); }
+.node-branch.ana:hover .nb-inner { box-shadow:0 0 50px rgba(232,168,56,0.25); }
+.node-branch.sto:hover .nb-inner { box-shadow:0 0 50px rgba(62,201,167,0.25); }
+/* ── TOPIC NODES ── */
+.node-topic { position:absolute; z-index:12; transform:translate(-50%,-50%); cursor:grab; user-select:none; touch-action:none; transition:all 0.2s ease; }
+.node-topic.dragging, .node-topic:active { cursor:grabbing; }
+.nt-inner { padding:9px 14px; border-radius:10px; border:1px solid var(--border2); background:var(--card); font-size:0.74rem; font-weight:600; letter-spacing:0.02em; text-align:center; min-width:128px; max-width:160px; line-height:1.3; transition:all 0.22s ease; box-shadow:0 4px 20px rgba(0,0,0,0.3); pointer-events:none; }
+.node-topic.ana .nt-inner { color:rgba(232,168,56,0.9); border-color:rgba(232,168,56,0.25); }
+.node-topic.sto .nt-inner { color:rgba(62,201,167,0.9); border-color:rgba(62,201,167,0.25); }
+.node-topic:hover .nt-inner { transform:translateY(-3px); box-shadow:0 8px 30px rgba(0,0,0,0.4); }
+.node-topic.ana:hover .nt-inner { border-color:rgba(232,168,56,0.6); background:rgba(232,168,56,0.08); }
+.node-topic.sto:hover .nt-inner { border-color:rgba(62,201,167,0.6); background:rgba(62,201,167,0.08); }
+.nt-count { font-size:0.56rem; font-weight:400; letter-spacing:0.07em; color:var(--muted); margin-top:4px; display:block; }
+/* ── LINES ── */
+.line-center { stroke:var(--dim); stroke-width:1.5; fill:none; opacity:0.6; }
+.line-topic { stroke-width:1; fill:none; opacity:0.22; stroke-dasharray:4 3; }
+.line-ana { stroke:var(--ana); }
+.line-sto { stroke:var(--sto); }
+/* ── PANEL ── */
+#panel {
+  position:fixed; right:0; top:0; bottom:0;
+  width:min(560px,96vw);
+  background:var(--surface); border-left:1px solid var(--border);
+  z-index:500; transform:translateX(110%);
+  transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);
+  display:flex; flex-direction:column;
+}
+#panel.open { transform:translateX(0); }
+.panel-head { padding:20px 24px 16px; border-bottom:1px solid var(--border); flex-shrink:0; }
+.panel-nav { display:flex; align-items:center; gap:8px; margin-bottom:12px; }
+.btn { font-family:'Syne',sans-serif; font-size:0.65rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; padding:5px 12px; border-radius:6px; border:1px solid var(--border2); background:transparent; color:var(--muted); cursor:pointer; transition:all 0.15s; }
+.btn:hover { color:var(--text); border-color:var(--text); }
+.btn-close { margin-left:auto; }
+.panel-accent { height:2px; border-radius:2px; margin-bottom:10px; }
+.panel-accent.ana { background:linear-gradient(90deg,var(--ana),transparent); }
+.panel-accent.sto { background:linear-gradient(90deg,var(--sto),transparent); }
+.panel-title { font-family:'Instrument Serif',serif; font-size:1.3rem; color:var(--text); line-height:1.2; }
+.panel-bread { font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-top:4px; }
+.panel-body { flex:1; overflow-y:auto; padding:18px 24px 32px; scrollbar-width:thin; scrollbar-color:var(--border2) transparent; }
+/* ── TOPIC VIEW ── */
+.topic-intro { font-size:0.75rem; color:var(--muted); margin-bottom:16px; line-height:1.6; }
+.year-section { margin-bottom:4px; }
+.year-header {
+  font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase;
+  color:var(--muted); padding:12px 0 6px;
+  border-bottom:1px solid var(--border); margin-bottom:8px;
+}
+.year-header:first-child { padding-top:0; }
+.exam-card {
+  background:var(--card); border:1px solid var(--border); border-radius:10px;
+  padding:14px 16px; margin-bottom:8px; cursor:pointer; transition:all 0.2s;
+  position:relative; overflow:hidden;
+}
+.exam-card::before {
+  content:''; position:absolute; left:0; top:0; bottom:0;
+  width:3px; border-radius:2px 0 0 2px;
+}
+.exam-card.ana::before { background:var(--ana); }
+.exam-card.sto::before { background:var(--sto); }
+.exam-card:hover { border-color:var(--border2); transform:translateX(4px); background:#1e2336; }
+.ec-label { font-family:'Instrument Serif',serif; font-size:1rem; color:var(--text); line-height:1.3; }
+.ec-sub { font-size:0.65rem; color:var(--muted); margin-top:5px; }
+.ec-arrow { position:absolute; right:16px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:1rem; }
+/* ── EXAM VIEW ── */
+.exam-view-header {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:10px; padding:14px 16px; margin-bottom:14px;
+}
+.ev-year { font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+.ev-title { font-family:'Instrument Serif',serif; font-size:1.05rem; color:var(--text); line-height:1.3; }
+.ev-topic { font-size:0.65rem; color:var(--muted); margin-top:4px; }
+.page-images { margin-bottom:14px; }
+.page-img {
+  width:100%; border-radius:8px; margin-bottom:8px;
+  border:1px solid var(--border); display:block;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);
+}
+.solution-toggle {
+  width:100%; padding:12px 18px;
+  background:transparent; border:1.5px solid;
+  border-radius:8px; cursor:pointer;
+  font-family:'Syne',sans-serif; font-size:0.75rem;
+  font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
+  transition:all 0.2s; margin-bottom:12px;
+}
+.solution-toggle.ana { border-color:rgba(232,168,56,0.5); color:var(--ana); }
+.solution-toggle.sto { border-color:rgba(62,201,167,0.5); color:var(--sto); }
+.solution-toggle.ana:hover { background:rgba(232,168,56,0.1); }
+.solution-toggle.sto:hover { background:rgba(62,201,167,0.1); }
+.solution-box { display:none; }
+.solution-box.open { display:block; }
+.sol-label { font-size:0.58rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); padding-bottom:8px; border-bottom:1px solid var(--border); margin-bottom:14px; }
+.sol-step { display:flex; gap:12px; margin-bottom:12px; align-items:flex-start; }
+.sol-n { width:22px; height:22px; flex-shrink:0; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.62rem; font-weight:700; margin-top:1px; }
+.sol-n.ana { background:rgba(232,168,56,0.15); color:var(--ana); border:1px solid rgba(232,168,56,0.3); }
+.sol-n.sto { background:rgba(62,201,167,0.15); color:var(--sto); border:1px solid rgba(62,201,167,0.3); }
+.sol-text { font-size:0.82rem; line-height:1.75; color:#b0b8d0; white-space:pre-wrap; }
+.result-box { border-radius:8px; padding:12px 16px; margin-top:14px; font-family:'Instrument Serif',serif; font-size:0.93rem; line-height:1.5; }
+.result-box.ana { background:rgba(232,168,56,0.08); border:1px solid rgba(232,168,56,0.25); color:var(--ana); }
+.result-box.sto { background:rgba(62,201,167,0.08); border:1px solid rgba(62,201,167,0.25); color:var(--sto); }
+.result-box::before { content:'Ergebnis'; font-family:'Syne',sans-serif; font-size:0.55rem; letter-spacing:0.15em; text-transform:uppercase; opacity:0.6; display:block; margin-bottom:4px; }
+/* ── OVERLAY ── */
+#overlay { position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:400; opacity:0; pointer-events:none; transition:opacity 0.3s; backdrop-filter:blur(2px); }
+#overlay.on { opacity:1; pointer-events:all; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.anim { animation:fadeUp 0.28s ease forwards; }
+
+/* ── VIDEO BUTTON ── */
+.video-btn {
+  display:flex; align-items:center; gap:10px;
+  background: linear-gradient(135deg, rgba(255,60,60,0.12), rgba(255,60,60,0.06));
+  border:1px solid rgba(255,80,80,0.35);
+  border-radius:10px; padding:12px 16px; margin-bottom:8px;
+  color:#ff8080; text-decoration:none; font-size:0.8rem; font-weight:600;
+  letter-spacing:0.04em; transition:all 0.2s; flex:1;
+}
+.video-btn:hover { background:rgba(255,60,60,0.2); border-color:rgba(255,80,80,0.6); transform:translateX(3px); }
+.vbtn-icon { font-size:1rem; background:rgba(255,60,60,0.25); border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.vbtn-ext { margin-left:auto; opacity:0.5; font-size:0.7rem; }
+
+/* ── PDF BUTTON ── */
+.pdf-btn {
+  display:flex; align-items:center; gap:10px;
+  background: linear-gradient(135deg, rgba(79,142,247,0.12), rgba(79,142,247,0.06));
+  border:1px solid rgba(79,142,247,0.35);
+  border-radius:10px; padding:12px 16px; margin-bottom:8px;
+  color:#8ab8ff; text-decoration:none; font-size:0.8rem; font-weight:600;
+  letter-spacing:0.04em; transition:all 0.2s; flex:1;
+}
+.pdf-btn:hover { background:rgba(79,142,247,0.2); border-color:rgba(79,142,247,0.6); transform:translateX(3px); }
+.pbtn-icon { font-size:1rem; background:rgba(79,142,247,0.25); border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+
+/* ── ACTION ROW ── */
+.action-row { display:flex; gap:8px; margin-bottom:4px; flex-wrap:wrap; }
+.action-row .video-btn, .action-row .pdf-btn { margin-bottom:0; }
+
+/* ── YEAR OVERVIEW PANEL ── */
+.year-overview { margin-bottom:20px; }
+.year-ov-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:12px; padding:16px 18px; margin-bottom:10px;
+}
+.year-ov-title { font-family:'Instrument Serif',serif; font-size:1.1rem; color:var(--text); margin-bottom:8px; }
+.year-ov-links { display:flex; gap:8px; flex-wrap:wrap; }
+.year-ov-pdf {
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(79,142,247,0.1); border:1px solid rgba(79,142,247,0.3);
+  border-radius:6px; padding:5px 12px;
+  color:#8ab8ff; text-decoration:none; font-size:0.72rem; font-weight:600;
+  letter-spacing:0.06em; transition:all 0.2s;
+}
+.year-ov-pdf:hover { background:rgba(79,142,247,0.2); border-color:rgba(79,142,247,0.6); }
+.year-ov-vid {
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(255,60,60,0.1); border:1px solid rgba(255,80,80,0.3);
+  border-radius:6px; padding:5px 12px;
+  color:#ff8080; text-decoration:none; font-size:0.72rem; font-weight:600;
+  letter-spacing:0.06em; transition:all 0.2s;
+}
+.year-ov-vid:hover { background:rgba(255,60,60,0.2); }
+
+/* ── NO IMG BOX ── */
+.no-img-box { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:16px; margin-bottom:12px; color:var(--muted); font-size:0.78rem; text-align:center; }
+
+/* ── SOLUTION IMAGES ── */
+.sol-images { margin-bottom:8px; }
+@media(max-width:600px){
+  .site-header{padding:16px 20px 14px}
+  .tip{padding:7px 20px}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div>
+    <div class="logo-main">Mathematik FOS 12</div>
+    <div class="logo-sub">Bayern · Nichttechnik · Abitur Mindmap</div>
+  </div>
+  <div class="header-pills">
+    <div class="pill">2020</div><div class="pill">2021</div><div class="pill">2022</div>
+    <div class="pill">2023</div><div class="pill">2024</div><div class="pill">2025</div>
+    <div class="pill ana">Analysis</div><div class="pill sto">Stochastik</div>
+  </div>
+</header>
+
+<div class="tip">
+  <span>💡 Klick</span> auf Thema → Aufgaben wählen → Original-Abituraufgabe sehen → Lösung aufklappen · <span>Ziehen</span> verschiebt Elemente · <span>Mitte</span> = alle PDFs
+</div>
+
+<div id="map">
+  <svg id="lines"></svg>
+  <div class="node-center" onclick="openYearOverview()" style="cursor:pointer">
+    <div class="nc-title">Mathe<br>FOS 12</div>
+    <div class="nc-sub" style="font-size:0.5rem">📚 Alle PDFs</div>
+  </div>
+</div>
+
+<div id="overlay" onclick="closePanel()"></div>
+<div id="panel">
+  <div class="panel-head">
+    <div class="panel-nav">
+      <button class="btn" id="btn-back" onclick="goBack()" style="display:none">← Zurück</button>
+      <button class="btn btn-close" onclick="closePanel()">✕ Schließen</button>
+    </div>
+    <div class="panel-accent" id="p-accent"></div>
+    <div class="panel-title" id="p-title"></div>
+    <div class="panel-bread" id="p-bread"></div>
+  </div>
+  <div class="panel-body" id="p-body"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  DATENSTRUKTUR – Themen & Prüfungszuordnung
+//  Jede Aufgabe verweist auf einen IMAGE_KEY aus exam_images.js
+//  und enthält eine optionale Schritt-für-Schritt Lösung
+// ══════════════════════════════════════════════════════════════
+
+const TREE = [
+  {
+    id:'ana', label:'Analysis', cls:'ana', angle:-150, dist:230,
+    topics: [
+      {
+        id:'ana-kurve', label:'Kurvendiskussion\nganzrat. Fkt.',
+        desc:'Globalverhalten, Symmetrie, Nullstellen, HoP/TiP/TeP, Wendepunkte, Monotonie',
+        exams: [
+          { year:'2025', section:'Teil 2 – Analysis II', imgKey:'2025_t2_analysis2',
+            title:'f(x)=–⅛(x⁴–6x²+8x) – vollst. Kurvendiskussion', pts:'26 BE',
+            steps:[
+              `Globalverhalten: führender Term –⅛x⁴\nx→±∞: f(x)→–∞`,
+              `f'(x)=–½(x³–3x+2)=–½(x–1)²(x+2)=0\n→ x₁=1 (doppelt), x₂=–2`,
+              `f''(x)=–½(3x²–3)\nf''(1)=0 → Terrassenpunkt T(1|–3/8)\nf''(–2)=–4,5<0 → Hochpunkt H(–2|3)`,
+              `Wendepunkte: f''(x)=0 → x=±1\nW₁(1|–3/8), W₂(–1|13/8)\nProbe: Gerade g(x)=–x+5/8 geht durch beide ✓`,
+              `Fläche [–1;1] zw. Gf und Gg:\nA=[x⁵/40–x³/4+7x²/16+5x/8]₋₁¹ = 5/4`
+            ],
+            result:'T(1|–3/8) · H(–2|3) · W₁(1|–3/8) · W₂(–1|13/8) · Fläche=1,25 FE'
+          },
+          { year:'2024', section:'Teil 2 – Analysis I', imgKey:'2024_t2_analysis1', solKey:'sol_2024_t2_ana1_extrem',
+            title:'f(x)=–½x⁴–2x³–2x² – Extrempunkte & Fläche', pts:'24 BE',
+            steps:[
+              `f(x)=–½x²(x+2)² → Nullstellen: x=0 (2-fach), x=–2 (2-fach)`,
+              `f'(x)=–2x(x+1)(x+2)=0 → x=0,–1,–2\nf''(0)=–4<0 → H(0|0)\nf''(–1)=2>0 → T(–1|–½)\nf''(–2)=–4<0 → H(–2|0)`,
+              `Parabel p mit S(–1|–1,5) durch A(–3|–4,5), B(1|–4,5):\na=–¾ → p(x)=–¾x²–3/2x–9/4`,
+              `A=∫₋₃¹(f–p)dx=[–x⁵/10–x⁴/2–5x³/12+3x²/4+9x/4]₋₃¹=32/5`
+            ],
+            result:'H(0|0) · T(–1|–½) · H(–2|0) · Fläche=32/5=6,4 FE'
+          },
+          { year:'2022', section:'Teil 2 – Analysis I', imgKey:'2022_t2_analysis1',
+            title:'f(x)=–⅛x⁴+2x² – Kurvendiskussion & Wolfsrudel', pts:'43 BE',
+            steps:[
+              `f'(x)=–½x³+4x=–½x(x²–8)=0 → x=0, x=±2√2`,
+              `f''(x)=–3/2x²+4\nf''(0)=4>0 → T(0|0)\nf''(±2√2)=–8<0 → H(±2√2|4)`,
+              `Wendestellen: f''=0 → x=±√(8/3)=±2√6/3`,
+              `Tangente an x=–2: f'(–2)=4–8·(–½)... [s. Originalaufgabe]`,
+              `Wolfsrudel N(t)=4·e^(0,301t)\nFür N=440: t=ln(110)/0,301≈15,6 Jahre → ca. 2024`
+            ],
+            result:'H(±2√2|4) · T(0|0) · Wendestellen ±2√6/3 · Wolfsrudel 440 ca. 2024'
+          },
+          { year:'2021', section:'Teil 1 – Analysis', imgKey:'2021_t1_analysis', solKey:'sol_2021_t1_ana_ganzrat',
+            title:'Ganzrationale Funktion 4. Grades aus Graph ablesen', pts:'12 BE',
+            steps:[
+              `Nullstellen aus Graph: x=–3 (einfach), x=–2 (einfach), x=1 (doppelt)\n→ f(x)=a(x+3)(x+2)(x–1)²`,
+              `Leitkoeffizient a aus Bedingung bestimmen:\nf(x)=–¼(x⁴+5x³+6x²–4x–8) [laut Angabe]`,
+              `Fläche im I. Quadranten: Nullstellen x=0 bis x=1\nA=∫₀¹f(x)dx=[–x⁵/20–x⁴/16–x³/6+x²/8+2x]₀¹`
+            ],
+            result:'f(x)=–¼(x⁴+5x³+6x²–4x–8) · Fläche I. Quadrant aus Integration'
+          },
+          { year:'2020', section:'Teil 1 – Analysis', imgKey:'2020_t1_analysis',
+            title:'Ableitungsgraph lesen – Extremstellen & Wendepunkte', pts:'13 BE',
+            steps:[
+              `Graph von f' gegeben (Parabel). Extremstellen von f wo f'=0:\nf' hat Nullstellen ca. bei x≈–1 und x≈2\nVorzeichenwechsel: – → + bei x≈–1 → Tiefpunkt\n+ → – bei x≈2 → Hochpunkt`,
+              `Wendestelle von f: Extremum von f' → Scheitelpunkt der Parabel\nAus Graph: x≈0,5, dort f'(0,5)<0 → Wendetangente fällt`,
+              `h'(x)=x²+1>0 für alle x → h streng monoton steigend → genau eine Nullstelle`,
+              `2x⁴–18x²=0 → 2x²(x²–9)=0 → x=0, x=±3`
+            ],
+            result:'Tiefpunkt ca. x=–1 · Hochpunkt ca. x=2 · Wendestelle ca. x=0,5 · Nullst: 0,±3'
+          },
+        ]
+      },
+      {
+        id:'ana-exp', label:'Exponential-\nfunktion',
+        desc:'f(x)=a·bˣ (allg.) | f(x)=a·e^(c(x–d))+y₀ | Verschiebungen | Ketten-/Produktregel',
+        exams: [
+          { year:'2025', section:'Teil 2 – Analysis I', imgKey:'2025_t2_analysis1',
+            title:'Bienenvolk N(t)=2t²·e^(–0,125t–0,2)+5 · f(x)=⅟₁₄(x³–12x²+36x+49)', pts:'43 BE',
+            steps:[
+              `N(0)=5 → 5.000 Bienen\nN(5)=50·e^(–0,825)+5≈26,9 → ca. 26.900 Bienen`,
+              `Ṅ(t)=e^(–0,125t–0,2)·(–0,25t²+4t)=0\n→ t=16 Wochen: N(16)≈61.700 Bienen (absolutes Maximum)`,
+              `Wendepunkt tW≈4,7: Wachstumsrate nimmt ab → stärkste Wachstumsphase\nṄ(4,7)≈6,04: ~6.040 Bienen/Woche Wachstum`,
+              `f(x)=⅟₁₄(x³–12x²+36x+49): Nullstellen über f'=0\nh(x)=x·e^(x–2): Tangente bei x=2\nh'(x)=e^(x–2)(1+x) → h'(2)=3 → t(x)=3x–4`
+            ],
+            result:'N_max≈61.700 nach 16 Wochen · Tangente h: t(x)=3x–4'
+          },
+          { year:'2024', section:'Teil 2 – Analysis I', imgKey:'2024_t2_analysis1', solKey:'sol_2024_t2_ana1_alu',
+            title:'Aluminiumhütte T(t)=250·t·e^(–0,1t)+22', pts:'19 BE',
+            steps:[
+              `T(5)=1250·e^(–0,5)+22≈780°C\nT(∞)=22°C (Raumtemperatur)`,
+              `Ṫ(t)=e^(–0,1t)(250–25t)=0 → t=10 min\nT(10)=2500·e^(–1)+22≈942°C → Temperaturmaximum`,
+              `Ṫ(20)=e^(–2)·(–250)≈–33,8°C/min\nBedeutung: Abkühlung mit 33,8°C pro Minute nach 20 min`
+            ],
+            result:'T(5)≈780°C · T_max≈942°C bei t=10 min · Ṫ(20)≈–33,8°C/min'
+          },
+          { year:'2023', section:'Teil 1 – Analysis', imgKey:'2023_t1_analysis',
+            title:'(eˣ)²–25=0 · Parameter d,y₀ der Exponentialfunktion', pts:'8 BE',
+            steps:[
+              `(eˣ)²=25 → eˣ=5 (da eˣ>0) → x=ln(5)≈1,609`,
+              `Asymptote von h: y₀=–1\nEinsetzen P(0,5|2): 2=e^(0,5+d)–1 → e^(0,5+d)=3\nd=ln(3)–0,5≈0,599`,
+              `∫₋₁¹(2–h(x))dx>0: Aus Graph: y=2 liegt über Gh in [–1;1] → WAHR`
+            ],
+            result:'x=ln(5)≈1,61 · d≈0,60 · y₀=–1 · Integral > 0: WAHR'
+          },
+          { year:'2022', section:'Teil 1 – Analysis', imgKey:'2022_t1_analysis',
+            title:'Bakterienpopulation B(t)=2·10⁶·(½)ᵗ – Gleichungen lösen', pts:'12 BE',
+            steps:[
+              `a) x³–2x²+x=x(x–1)²=0 → x=0 (einfach), x=1 (doppelt)`,
+              `b) (eˣ–2)²–4=0 → eˣ–2=±2\neˣ=4 → x=ln(4)≈1,386\neˣ=0: keine Lösung (eˣ>0)`,
+              `0,4=(½)^t₁ → t₁·ln(½)=ln(0,4) → t₁=ln(0,4)/ln(0,5)≈1,32`
+            ],
+            result:'a) x=0,1 · b) x=ln(4)≈1,39 · t₁=ln(0,4)/ln(0,5)≈1,32'
+          },
+          { year:'2021', section:'Teil 1 – Analysis', imgKey:'2021_t1_analysis', solKey:'sol_2021_t1_ana_exp',
+            title:'Exponentialfunktionen aus Wertetabellen zuordnen', pts:'5 BE',
+            steps:[
+              `h(0)=7, h(2)=5 → abnehmend, h≥0\nA) 8–3^(0,5x): h(0)=8–1=7 ✓, h(2)=8–3=5 ✓ → Tabelle 1!`,
+              `k(0)=?, k(2)=9, k(4)=15 → steigend\nD) x+7: k(0)=7, k(2)=9 ✓, k(4)=11 ✗\nC) 3^(0,5x)+6: k(0)=7, k(2)=9 ✓, k(4)=15 ✓ → Tabelle 2!`,
+              `h(4)=8–3²=8–9=–1 | k(0)=3⁰+6=7`
+            ],
+            result:'Tabelle 1: A) 8–3^(0,5x) · Tabelle 2: C) 3^(0,5x)+6 · h(4)=–1 · k(0)=7'
+          },
+          { year:'2020', section:'Teil 2 – Analysis II', imgKey:'2020_t2_analysis2',
+            title:'g(x)=2–5e^(–0,1x²) – Symmetrie, Extrempunkt, Tangente', pts:'21 BE',
+            steps:[
+              `g(–x)=2–5e^(–0,1x²)=g(x) → achsensymmetrisch zur y-Achse\nGrenzwert: g(x)→2 für |x|→∞ → Asymptote y=2`,
+              `Nullstellen: 2–5e^(–0,1x²)=0 → e^(–0,1x²)=0,4\n–0,1x²=ln(0,4) → x=±√(–10·ln(0,4))≈±3,02`,
+              `g'(x)=x·e^(–0,1x²) [Teilergebnis]\ng'(x)=0 → x=0 → absolutes Minimum (g''(0)>0)\ng(0)=2–5=–3 → globales Minimum M(0|–3), Wf=[–3;2[`,
+              `Tangente bei x=3: g'(3)=3·e^(–0,9)≈1,219\ng(3)=2–5e^(–0,9)≈–0,036\nt(x)=–0,036+1,219(x–3)`
+            ],
+            result:'Achsensymm. · Asym. y=2 · Nullst. ≈±3,02 · Min M(0|–3) · Tangente bei x=3'
+          },
+        ]
+      },
+      {
+        id:'ana-opt', label:'Extremwert-\naufgaben',
+        desc:'Zielfunktion aufstellen, Nebenbedingung einsetzen, Randextrema prüfen',
+        exams: [
+          { year:'2025', section:'Teil 2 – Analysis II', imgKey:'2025_t2_analysis2',
+            title:'Pflanzgefäß – Kreiskegelstumpf-Volumen maximieren', pts:'9 BE',
+            steps:[
+              `R=3r, s=25: s²=(2r)²+h² → r²=(625–h²)/4\nV(h)=13π/12·(625h–h³) ✓ [zeigen]`,
+              `V'(h)=13π/12·(625–3h²)=0 → h=25/√3≈14,43\nAußerhalb [15;23]! V monoton fallend → Maximum am Rand: h=15`,
+              `V(15)=13π/12·(9375–3375)=6500π≈20.420 cm³\nr²=(625–225)/4=100 → R=30 cm → D=60 cm`
+            ],
+            result:'h=15 cm (Randmax.) · V_max=6500π≈20.420 cm³ · Durchmesser=60 cm'
+          },
+          { year:'2024', section:'Teil 2 – Analysis II', imgKey:'2024_t2_analysis2', solKey:'sol_2024_t2_ana2_opt',
+            title:'Tauchflasche (Zylinder+Halbkugel) – V(r)=–5/6πr³+4πr', pts:'10 BE',
+            steps:[
+              `V(r)=–5/6πr³+4πr [zeigen mit h=4/r–3r/2]`,
+              `V'(r)=–5/2πr²+4π=0 → r²=8/5 → r=√(8/5)≈1,265 dm\nIn [0,85;1,4]: r≈1,27 dm ist Maximum`,
+              `V(1,27)≈–5/6π·2,04+4π·1,27≈–5,34+15,96≈10,62 dm³`
+            ],
+            result:'Optimaler Radius r≈1,27 dm · V_max≈10,62 dm³'
+          },
+          { year:'2023', section:'Teil 2 – Analysis I', imgKey:'2023_t2_analysis1',
+            title:'Delfin T(t) + Delfinbecken V(r)=–π/2r³+90πr + Algenteppich', solKey:'', pts:'11 BE',
+            steps:[
+              `Fläche: πr²+2πrh=180π → h=(180–r²)/(2r)\nV=πr²h=–π/2r³+90πr ✓`,
+              `V'(r)=–3π/2r²+90π=0 → r²=60 → r=2√15≈7,75 m\nV''<0 → Maximum ✓`,
+              `V(2√15)=120π√15≈1.459 m³\nPro Delfin 360 m³ → 3 Delfine brauchen 1.080 m³ < 1.459 → reicht aus!`
+            ],
+            result:'r=2√15≈7,75 m · V_max=120π√15≈1.459 m³ · Reicht für 3 Delfine ✓'
+          },
+          { year:'2022', section:'Teil 2 – Analysis I', imgKey:'2022_t2_analysis1',
+            title:'Tropenhaus (Quader+Halbzylinder) – V(r)=600r–0,9πr³', pts:'13 BE',
+            steps:[
+              `A=10rh+4πr²=1000 → h=(1000–4πr²)/(10r)\nV=6r²h+π/2r²·3r... [s. Angabe] → V(r)=600r–0,9πr³ ✓`,
+              `V'(r)=600–2,7πr²=0 → r²=600/(2,7π) → r≈8,41 m\nr∈[4;8,5] → r=8,41 ist Maximum`,
+              `V(8,41)≈600·8,41–0,9π·595≈5046–1683≈3363 m³`
+            ],
+            result:'r≈8,41 m · V_max≈3.363 m³'
+          },
+          { year:'2021', section:'Teil 2 – Analysis I', imgKey:'2021_t2_analysis1', solKey:'sol_2021_t2_ana1_opt',
+            title:'Tipi-Zelt (Kreiskegel s=8m) – Volumen maximieren', pts:'11 BE',
+            steps:[
+              `r²=s²–h²=64–h² → V(h)=π/3·r²·h=π/3·(64–h²)·h=–π/3h³+64π/3·h ✓`,
+              `V'(h)=–πh²+64π/3=0 → h²=64/3 → h=8/√3≈4,62\nIn [4;6]: r liegt im Intervall → Maximum!`,
+              `V''(h)=–2πh<0 → Hochpunkt ✓\nV(8/√3)=–π/3·(512/3√3)+64π/3·8/√3=512π/(9√3)≈103,4 m³\nr=√(64–64/3)=8·√(2/3)≈6,53 m → Durchmesser≈13,06 m`
+            ],
+            result:'h≈4,62 m · V_max≈103,4 m³ · Bodendurchmesser≈13,06 m'
+          },
+          { year:'2020', section:'Teil 2 – Analysis I', imgKey:'2020_t2_analysis1',
+            title:'Springbrunnen – Auffangwanne g(x)=–⅟₁₂x⁴+⅓x²', pts:'13 BE',
+            steps:[
+              `Aus Graph: g(0)=0, g'(0)=0, g(±2)=0, Maximum g(0,75)≈... \n→ g(x)=–⅟₁₂x⁴+⅓x² [laut Teilergebnis]`,
+              `Wasserfontäne pa(x)=–ax²+5x+0,75\nPunkt A(1|0,25): 0,25=–a+5+0,75 → a=5,5`,
+              `Max. Füllhöhe: Schnittpunkt des höchsten pa mit Wannenrand\nBeim Überlaufen: pa(x)=g(x) → Lösung gibt hmax`
+            ],
+            result:'g(x)=–⅟₁₂x⁴+⅟₃x² · a=5,5 bei Punkt A · hmax aus Schnittpunktberechnung'
+          },
+        ]
+      },
+      {
+        id:'ana-steck', label:'Steckbrief\n(KD rückwärts)',
+        desc:'Funktionsterm aus gegebenen Eigenschaften bestimmen (Kurvendiskussion rückwärts)',
+        exams: [
+          { year:'2024', section:'Teil 2 – Analysis II', imgKey:'2024_t2_analysis2', solKey:'sol_2024_t2_ana2_steck',
+            title:'f(x)=⅛(x³–7x²+8x+16) – Tangente, kein m=–2, Wendepunkt', pts:'10 BE',
+            steps:[
+              `Aus Graph: f(0)=2, f hat Nullstellen bei x=–2 (einfach) und x=4 (doppelt)\nf(x)=⅛(x³–7x²+8x+16) [laut Angabe]`,
+              `Tangente bei P(0|2): f'(x)=⅛(3x²–14x+8), f'(0)=1\nt(x)=x+2`,
+              `f'(x)=–2: ⅛(3x²–14x+8)=–2 → 3x²–14x+24=0\nDiskrimin.=196–288=–92<0 → keine Lösung → m=–2 unmöglich ✓`,
+              `Wendepunkt: f''(x)=⅛(6x–14)=0 → x=7/3\nf(7/3)=⅛·(343/27–49·7/9+56/3+16)=125/108\nW(7/3|125/108)`
+            ],
+            result:'Tangente t(x)=x+2 · m=–2 unmöglich · W(7/3|125/108)'
+          },
+          { year:'2023', section:'Teil 2 – Analysis II', imgKey:'2023_t2_analysis2',
+            title:'f(x)=ax³+bx²–0,9x+c, dann g=–0,025(x³–12x²+36x–80)', solKey:'', pts:'6 BE',
+            steps:[
+              `f(0)=c=2 → c=2\nf'(x)=3ax²+2bx–0,9\nExtremstelle bei x=2: f'(2)=12a+4b–0,9=0 → 12a+4b=0,9`,
+              `Extrempunkt E(2|1,2): 8a+4b–1,8+2=1,2 → 8a+4b=1\nAus beiden: (12a+4b)–(8a+4b)=0,9–1 → 4a=–0,1 → a=–0,025\n4b=1–8·(–0,025)=1,2 → b=0,3`,
+              `f(x)=–0,025x³+0,3x²–0,9x+2`
+            ],
+            result:'a=–0,025 · b=0,3 · c=2'
+          },
+          { year:'2021', section:'Teil 2 – Analysis I', imgKey:'2021_t2_analysis1', solKey:'sol_2021_t2_ana1_kurve',
+            title:'f(x)=ax³+bx+c aus Wendepunkt & Tangentengleichung', pts:'6 BE',
+            steps:[
+              `WP im Schnittpunkt mit y-Achse: x=0 ist Wendestelle → f''(0)=0\nf(x)=ax³+bx+c → f''(x)=6ax → 6a·0=0 ✓ (für alle a)`,
+              `Wendetangente t: y=2x+1 → f'(0)=b=2 und f(0)=c=1`,
+              `P(–1|0,5): f(–1)=–a–2+1=0,5 → –a=1,5 → a=–1,5\nf(x)=–1,5x³+2x+1 [Teilergebnis bestätigt]`
+            ],
+            result:'f(x)=–1,5x³+2x+1'
+          },
+        ]
+      },
+      {
+        id:'ana-int', label:'Integral-\nrechnung',
+        desc:'Stammfunktion · Fläche zw. Graph & x-Achse · Fläche zw. zwei Graphen · Flächenbilanz',
+        exams: [
+          { year:'2024', section:'Teil 1 – Analysis', imgKey:'2024_t1_analysis', solKey:'sol_2024_t1_ana_fläche',
+            title:'Fläche unter p(x)=–x²+1 · Nullstellen & Ableitung lesen', pts:'13 BE',
+            steps:[
+              `Nullstellen: –x²+1=0 → x=±1\nA=∫₋₁¹(–x²+1)dx=[–x³/3+x]₋₁¹\n=(–1/3+1)–(1/3–1)=2/3+2/3=4/3≈1,33 FE`,
+              `k(x)=0,5(x–3)²(2x+4/3): Nullstellen x=3 (2-fach), x=–2/3 (einfach)\nHochpunkt-x liegt in ]–2/3; 3[`,
+              `g(x)=2eˣ–1 und h(x)=e^(2x):\n2u–1=u² (u=eˣ) → (u–1)²=0 → u=1 → x=0\nP(0|1)`,
+              `j(x)=–2eˣ+3 [Spiegelung+Verschiebung]`
+            ],
+            result:'A=4/3 · P(0|1) · j(x)=–2eˣ+3'
+          },
+          { year:'2022', section:'Teil 1 – Analysis', imgKey:'2022_t1_analysis',
+            title:'∫₀²(3x–1)dx interpretieren · Stammfunktion & Fläche', pts:'8 BE',
+            steps:[
+              `g(x)=3x–1: Nullstelle x=1/3\n∫₀²(3x–1)dx=[3x²/2–x]₀²=(6–2)–0=4\nGeometrisch: Flächenbilanz zw. g und x-Achse (– von 0 bis 1/3, + von 1/3 bis 2) = 4`,
+              `Stammfunktion H besitzt Terrassenpunkt: h hat Extremum bei dem kein Vorzeichenwechsel stattfindet → aus Graph ablesen ob h' VZ-Wechsel hat`,
+              `Parabel mit S(2|2k–1) schneidet x-Achse 2x: Scheitel-y<0\n2k–1<0 → k<1/2`
+            ],
+            result:'∫=4 (orientierter Flächeninhalt) · k<1/2'
+          },
+          { year:'2021', section:'Teil 2 – Analysis II', imgKey:'2021_t2_analysis2', solKey:'sol_2021_t2_ana2_ganzrat',
+            title:'f(x)=⅟₁₂(x⁴–20x²+64) – Fläche + Tetra-Pak Optimierung', pts:'24 BE',
+            steps:[
+              `Nullstellen: x⁴–20x²+64=0 → u²–20u+64=0 (u=x²)\nu=(20±√(400–256))/2=10±6 → u=16 oder u=4\nx=±4, x=±2`,
+              `Extrempunkte (f'=0): f'(x)=⅟₁₂(4x³–40x)=⅟₃x(x²–10)\n→ x=0, x=±√10\nf(0)=64/12≈5,33 → Hochp. H(0|16/3)\nf(±√10)=⅟₁₂(100–200+64)=–3 → Tiefp. T(±√10|–3)`,
+              `Fläche des kleineren Flächenstücks zwischen f und g(y=15/4):\nSchnittpunkte bei x₁=–1, x₂=1\nA=∫₋₁¹(g–f)dx≈2,33 FE (auf 2 NK)`
+            ],
+            result:'Nullst: ±2, ±4 · H(0|16/3) · T(±√10|–3) · Fläche≈2,33 FE'
+          },
+          { year:'2020', section:'Teil 1 – Analysis', imgKey:'2020_t1_analysis',
+            title:'Krümmungsverhalten & Wendestellen aus Tabelle', pts:'4 BE',
+            steps:[
+              `Wendestellen = Stellen wo Krümmung wechselt:\nx=1 (links→rechts) und x=4 (rechts→links)`,
+              `2 Wendestellen → g'' hat mind. 2 Nullstellen → g'' ist mind. Grad 2\ng ist mind. Grad 4. Da g höchstens Grad 5: g ist genau Grad 4 oder 5.\nMit 2 Wendestellen und g ist ganzrational: g hat Grad 4 oder höher.\nUm genau 2 WP zu haben → g'' hat genau 2 Nullstellen → g'' ist Grad 2 → g ist Grad 4`
+            ],
+            result:'Wendestellen: x=1 und x=4 · g hat Grad 4'
+          },
+        ]
+      },
+    ]
+  },
+  {
+    id:'sto', label:'Stochastik', cls:'sto', angle:-30, dist:230,
+    topics: [
+      {
+        id:'sto-vier', label:'Vierfeldertafel &\nbedingte W.',
+        desc:'P_A(B), stochastische Unabhängigkeit, Laplace',
+        exams: [
+          { year:'2025', section:'Teil 1 – Stochastik', imgKey:'2025_t1_stochastik',
+            title:'Müsli-Baumdiagramm – Rosinen & Nüsse, Unabhängigkeit', pts:'7 BE',
+            steps:[
+              `P(N̄|R)=1/4: Wenn ein Kunde Rosinen gewählt hat, wählt er mit W'keit 1/4 keine Nüsse`,
+              `Aus Baumdiagramm: P(R)=?, P(N)=?\nP(R∪N) = P(R)+P(N)–P(R∩N)`,
+              `Unabhängigkeit: R,N unabhängig wenn P(R∩N)=P(R)·P(N)\nAus Baumdiagramm berechnen und vergleichen`
+            ],
+            result:'Lösung hängt von den genauen Baumdiagrammwerten ab'
+          },
+          { year:'2024', section:'Teil 1 – Stochastik', imgKey:'2024_t1_stochastik', solKey:'sol_2024_t1_sto_vier',
+            title:'Supermarkt Vegetarier & Barzahler – Vierfeldertafel', pts:'3 BE',
+            steps:[
+              `P_V(B)=P(B∩V)/P(V)=0,10/0,15=2/3≈66,7%`,
+              `P_V̄(B)=P(B∩V̄)/P(V̄)=0,45/0,85≈52,9%`,
+              `66,7%>52,9% → Vegetarier zahlen häufiger bar`
+            ],
+            result:'P_V(B)≈66,7% > P_V̄(B)≈52,9% → Ja, Barzahler-Anteil unter Vegetariern höher'
+          },
+          { year:'2023', section:'Teil 1 – Stochastik', imgKey:'2023_t1_stochastik',
+            title:'Biergärten Fränkische Schweiz – Vierfeldertafel 1500 Touristen', pts:'6 BE',
+            steps:[
+              `V̄=1000, V=500. P(B|V)=0,8 → 400 mit B und V\nP(B̄)=300/1500=1/5 → P(B)=4/5=1200`,
+              `Tafel: V:400/100|500, V̄:800/200|1000, Σ:1200/300|1500\nP(V∪B)=500/1500+1200/1500–400/1500=1300/1500≈86,7%`,
+              `P_V(B)=400/500=80% = P_V̄(B)=800/1000=80% → stoch. unabhängig\n→ Biergärten gleich attraktiv ✓`
+            ],
+            result:'P(V∪B)≈86,7% · P_V(B)=P_V̄(B)=80% → stochastisch unabhängig'
+          },
+          { year:'2022', section:'Teil 1 – Stochastik', imgKey:'2022_t1_stochastik',
+            title:'Venn-Diagramm, Siebenmeter-Würfe, Losziehen ohne Zurücklegen', pts:'12 BE',
+            steps:[
+              `E₁ grau: B ohne A → B∩Ā (= B\\A)`,
+              `P(E₃)=P(trifft jedes Mal)=0,8²=0,64\nP(E₄)=1–P(trifft kein Mal)=1–0,2²=0,96`,
+              `2. Los gleichberechtigt: P(2. hat Gewinnlos)=?\nP(G₂)=P(G₁)·P(G₂|G₁)+P(N₁)·P(G₂|N₁)\n=2/5·1/4+3/5·2/4=2/20+6/20=8/20=2/5\n→ Gleiche Chance ✓`
+            ],
+            result:'E₁=B∩Ā · P(E₃)=0,64 · P(E₄)=0,96 · 2. Los gleiche Chance: 2/5 ✓'
+          },
+          { year:'2021', section:'Teil 1 – Stochastik', imgKey:'2021_t1_stochastik', solKey:'sol_2021_t1_sto_baum',
+            title:'Laplace-Würfel · P(A)=2/3, P(A∩B)=0, P(A∪B)=4/9 · Glücksrad', pts:'12 BE',
+            steps:[
+              `E={1,1;1,2;2,1} → P(E)=3/36=1/12`,
+              `P(B): P(A∪B)=P(A)+P(B)–P(A∩B)\n4/9=1/3+P(B)–0 → P(B)=4/9–3/9=1/9`,
+              `P(kein Niete, 4 Personen): P(H∪K)=1–P(N)\nGlücksrad: 8 gleiche Sektoren: H,K,N,N,N,... → P(N)=?/8\n(Aus Graph ablesbar: je 2 H, 2 K, 4 N? → P(N)=4/8=1/2)\nP(kein Niete)=(1/2)⁴=1/16\nE(X): E(X)=7·P(H)+3·P(K)+0·P(N)=7·(1/4)+3·(1/4)=10/4=2,5€`
+            ],
+            result:'P(E)=1/12 · P(B)=1/9 · P(kein Niete)=(1/2)⁴ · E(X)=2,5€ (Einsatz 2€ → vorteilhaft)'
+          },
+          { year:'2020', section:'Teil 1 – Stochastik', imgKey:'2020_t1_stochastik',
+            title:'Wintersport Baumdiagramm · Beschneiungsanlage Vierfeldertafel', pts:'12 BE',
+            steps:[
+              `Baumdiagramm: P(S)=3/4, P(W|S)=1/3, P(W|S̄)=4/5, P(R)=1/4 unabhängig\nGenau 2 Aktivitäten: z.B. S und W ohne R, oder S und R ohne W,...`,
+              `Liftkarte-Term: 12·0,6⁴·0,4¹¹\nBedeutung: Von 15 Personen haben genau 4 keinen Rabatt (die anderen 11 haben Rabatt), wobei unter den 4 Personen (ohne Rabatt) die letzten 4 (d.h. Positionen 12 bis 15) keinen Rabatt haben`,
+              `Vierfeldertafel: Oberdorf O=700, Befürworter O: 600\nUnterdorf Ū=500, gegen Anlage aus Ū: 300\nP(O̅ und gegen Bau)=P(Ū∩B̄)=300/1200=0,25\nP(für Bau)=(600+200)/1200=800/1200≈66,7%`
+            ],
+            result:'Term: genau 2 Aktivitäten-Berechnung · P(Ū∩B̄)=0,25 · Befürworter≈66,7%'
+          },
+        ]
+      },
+      {
+        id:'sto-baum', label:'Baumdiagramm &\nKombinatorik',
+        desc:'Mehrstufige Zufallsexperimente, VENN-Diagramme, Verknüpfungen, Kombinatorik',
+        exams: [
+          { year:'2025', section:'Teil 2 – Stochastik I', imgKey:'2025_t2_stochastik1',
+            title:'Volksfest Losbude & Münzenspiel – Baumdiagramm', pts:'23 BE',
+            steps:[
+              `E₁ (25 Lose, höchstens 3 Gewinne), E₂ (30 Lose, mehr als erwartet):\nX~B(25;0,2): P(X≤3)≈0,2340\nE(X)=25·0,2=5; P(X>5)=1–P(X≤5)≈1–0,617=0,383`,
+              `E₃ (genau 3 Gewinne nacheinander, 10 Lose):\nP=0,2³·0,8⁷ [nur eine Möglichkeit: 3 konsekutive Gewinne in Folge]`,
+              `n Lose für P(mind. 1 Gewinn)≥0,95:\n1–0,8ⁿ≥0,95 → 0,8ⁿ≤0,05\nn≥ln(0,05)/ln(0,8)≈13,4 → n_min=14`,
+              `Münzenspiel Baumdiagramm erstellen\nX: 4€ wenn WW, 8€ wenn ZZ, sonst 0€\nE(X) berechnen und mit Einsatz 3€ vergleichen`
+            ],
+            result:'n_min=14 Lose · Münzenspiel E(X) berechnen und mit 3€ vergleichen'
+          },
+          { year:'2024', section:'Teil 2 – Stochastik I', imgKey:'2024_t2_stochastik1', solKey:'sol_2024_t2_sto1_baum',
+            title:'Fußball-EM Tourismusunternehmen – Baumdiagramm 8 Elementarereignisse', pts:'15 BE',
+            steps:[
+              `P(A)=0,5; P(U|A)=0,8; P(U|Ā)=0,6\nP(S)=konstant (unabhängig von A,U)\nP(A∩U∩S)=0,36 → P(S)=0,36/(0,5·0,8)=0,9`,
+              `8 Elementarereignisse mit Wahrscheinlichkeiten berechnen\nTeilergebnis: P(A;U;S̄)=0,01 → P(S̄)=0,1 → P(S)=0,9 ✓`,
+              `E₁=P(A oder S): P(A∪S)=P(A)+P(S)–P(A∩S)\nE₂={(A;U;P);(A;U;P̄);(Ā;U;P);(Ā;U;P̄)}`
+            ],
+            result:'P(S)=0,9 · 8 Elementarereignisse · P(A∪S) ausrechnen'
+          },
+          { year:'2023', section:'Teil 2 – Stochastik I', imgKey:'2023_t2_stochastik1',
+            title:'E-Autos: Baumdiagramm A/B/C mit Batterie und Autopilot', pts:'23 BE',
+            steps:[
+              `P(A)=P(B)=0,35, P(C)=0,30\nP(K|B)=0,4, P(K|C)=0,85\nAutopilot: P(P|A)=0,2, P(P|B)=0,3, gesamt P(P)=0,415 → P(P|C) berechnen`,
+              `P(P)=P(P|A)·P(A)+P(P|B)·P(B)+P(P|C)·P(C)\n0,415=0,07+0,105+P(P|C)·0,3 → P(P|C)=0,8`,
+              `P((C;K;P))=P(C)·P(K|C)·P(P|C)=0,3·0,85·0,8=0,204\nTeilerg.: P((C;K;P̄))=0,3·0,15·0,8=0,036 ✓ [note: Hinweis meint K=klein]`
+            ],
+            result:'P(P|C)=0,8 · P((C;K;P))=... · Alle 10 Elementarereignisse berechnen'
+          },
+          { year:'2022', section:'Teil 2 – Stochastik I', imgKey:'2022_t2_stochastik1',
+            title:'Telekommunikation B/H + Router + Service – Baumdiagramm', pts:'23 BE',
+            steps:[
+              `P(B)=0,6, P(H)=0,4; P(R)=0,8 unabhängig\nP(S|R)=0,5; P(T|B,R)=P(K|B,R)=0,25; P(K|H,R)=0,4, P(T|H,R)=0,1`,
+              `8 Elementarereignisse:\nP((B;R;S))=0,6·0,8·0,5=0,24 etc.\nP((H;R;K))=0,4·0,8·0,4=0,128 ✓`,
+              `P_R(U): Vierfeldertafel mit P(Ū)=0,4, P(R∩Ū)=0,5\nP_R(Ū)=0,5/0,8=0,625; P_R̄(Ū)=(0,4–0,5·0,8)/(1–0,8)... → vergleichen`
+            ],
+            result:'P((H;R;K))=0,128 · P_R(Ū) vs P_R̄(Ū) berechnen und vergleichen'
+          },
+          { year:'2021', section:'Teil 2 – Stochastik I', imgKey:'2021_t2_stochastik1', solKey:'sol_2021_t2_sto1_baum',
+            title:'Freizeitpark R/T/D + Zusatzangebot – Baumdiagramm 8 EE', pts:'23 BE',
+            steps:[
+              `P(R̄)=0,8; P(T|R̄)=0,9; P(D|R)=0,75\nP(Z|T)=0,6 (unabh. von R); P(Z|D,R)=0,1; P(D,Z|R̄)=0,04`,
+              `P(Z|D,R̄)=0,04/(0,8·0,1)=0,5\nAlle 8 EE berechnen`,
+              `E₁=P(R oder T) aufzählend angeben\nStoch. Unabhängigkeit von E₁ und E₂ prüfen`
+            ],
+            result:'P((R̄;D;Z))=0,04 ✓ · Alle 8 EE · E₁ aufzählen · Unabhängigkeit prüfen'
+          },
+          { year:'2020', section:'Teil 2 – Stochastik I', imgKey:'2020_t2_stochastik1',
+            title:'Schokoladenfabrik Qualitätskontrolle – Baumdiagramm & Hypothesentest', pts:'23 BE',
+            steps:[
+              `Zufallsgröße X: E(X)=99,94 g (gegeben)\nVar(X) berechnen, dann σ, dann P(|X–μ|≤σ)`,
+              `Baumdiagramm: P(N)=prozentualer Anteil Nussschoko\nP(B)=0,25=P(B|N)·P(N)+P(B|N̄)·P(N̄)\n0,25=0,32·P(N)+0,22·(1–P(N)) → P(N)=0,3`,
+              `Hypothesentest: H₀: p≥0,1, H₁: p<0,1, n=200\nKritischer Bereich K={X≤14}\nFehler 1. Art: P(X≤14|p=0,1)≈...`
+            ],
+            result:'P(N)=30% · Kritischer Bereich K={X≤14} · Fehler 1. Art berechnen'
+          },
+        ]
+      },
+      {
+        id:'sto-zufall', label:'Zufallsgrößen &\nKennzahlen',
+        desc:'Erwartungswert E(X) · Varianz Var(X) · Standardabweichung σ · Laufpfaden',
+        exams: [
+          { year:'2025', section:'Teil 1 – Stochastik', imgKey:'2025_t1_stochastik',
+            title:'Gezinkter Würfel – P(X=3), P(X=5), fairer Einsatz', pts:'5 BE',
+            steps:[
+              `P(X≤3)=P(1)+P(2)+P(3)=0,5\n0,15+0,10+P(3)=0,5 → P(3)=0,25`,
+              `Σ aller W'keiten=1:\n0,15+0,10+0,25+0,10+P(5)+P(6)=1\nP(5)=0,2 [Teilergebnis], dann P(6)=0,20`,
+              `E(X)=1·0,15+2·0,10+3·0,25+4·0,10+5·0,20+6·0,20\n=0,15+0,20+0,75+0,40+1,00+1,20=3,70\nFairer Einsatz=E(X)=3,70€`
+            ],
+            result:'P(X=3)=0,25 · P(X=5)=0,20 · Fairer Einsatz=3,70€'
+          },
+          { year:'2024', section:'Teil 1 – Stochastik', imgKey:'2024_t1_stochastik', solKey:'sol_2024_t1_sto_binom',
+            title:'Supermarkt-Kassen X – E(X), Standardabweichung, P(in σ-Umgebung)', pts:'5 BE',
+            steps:[
+              `E(X)=0·0,05+1·0,45+2·0,35+3·0,15\n=0+0,45+0,70+0,45=1,60\nBedeutung: Im Durchschnitt 1,6 Kassen belegt`,
+              `Var(X)=0,64 → σ=√0,64=0,8\nIntervall: [E–σ; E+σ]=[0,8; 2,4]\nX-Werte im Intervall: X=1 und X=2`,
+              `P(0,8≤X≤2,4)=P(X=1)+P(X=2)=0,45+0,35=0,80`
+            ],
+            result:'E(X)=1,6 · σ=0,8 · P(X in σ-Umgebung)=0,80=80%'
+          },
+          { year:'2023', section:'Teil 1 – Stochastik', imgKey:'2023_t1_stochastik',
+            title:'Glücksrad – faires Spiel, Parameter a und b', pts:'6 BE',
+            steps:[
+              `Faires Spiel: E(X)=0 (Erwartungswert des Nettogewinns = 0)`,
+              `Σ W'keiten=1: 0,20+a+0,20+b+0,10=1 → a+b=0,50\nE(X)=0: –2·0,2+(–1)·a+0,5·0,2+1,5·b+3·0,1=0\n–0,4–a+0,1+1,5b+0,3=0 → –a+1,5b=0 → a=1,5b`,
+              `Einsetzen: 1,5b+b=0,5 → b=0,2 und a=0,3`
+            ],
+            result:'a=0,30 · b=0,20 · Faires Spiel mit E(X)=0 bestätigt'
+          },
+          { year:'2022', section:'Teil 2 – Stochastik II', imgKey:'2022_t2_stochastik2',
+            title:'Zufallsgröße X mit a,b – E(X)=1,7 – Standardabweichung', pts:'7 BE',
+            steps:[
+              `Σ P=1: a+2b+b+0,1+0,1+0,04=1 → a+3b=0,76\nE(X)=0·a+1·2b+2·b+3·0,1+4·0,1+5·0,04\n=2b+2b+0,3+0,4+0,2=4b+0,9=1,7 → b=0,2`,
+              `a=0,76–3·0,2=0,16\nWahrscheinlichkeitsverteilung: P(0)=0,16; P(1)=0,40; P(2)=0,20; P(3)=0,10; P(4)=0,10; P(5)=0,04`,
+              `Var(X)=E(X²)–(E(X))²\nE(X²)=0+0,40+0,80+0,90+1,60+1,00=4,70\nVar=4,70–1,7²=4,70–2,89=1,81\nσ=√1,81≈1,345\nP(|X–1,7|≤1,345)=P(0,355≤X≤3,045)=P(X=1)+P(X=2)+P(X=3)=0,70`
+            ],
+            result:'a=0,16 · b=0,20 · σ≈1,345 · P(in σ-Umgebung)=0,70=70%'
+          },
+          { year:'2021', section:'Teil 2 – Stochastik II', imgKey:'2021_t2_stochastik2', solKey:'sol_2021_t2_sto2_zufall',
+            title:'Schreiner Zufallsgröße – E(X)=3,12, Lieferzeiten', pts:'10 BE',
+            steps:[
+              `Σ P=1: a+(b–a)+0,2+b+0,08+0,02=1 → b+0,30=1–... → a+3b=...\nE(X)=1·a+2·(b–a)+3·0,2+4·b+5·0,08+6·0,02=3,12\nTeilergebnis: a=0,1 → b=...`,
+              `E₁=P(X≤4)=a+(b–a)+0,2+b=0,1+0,3+0,2+0,2=0,80`,
+              `E₂=C(9;3)·P(X=1)³·P(X≥2)⁶\nE₃=P(X≤5)⁹·P(X=6)=0,98⁹·0,02`
+            ],
+            result:'a=0,1 · b=0,2 · E(X)=3,12 · P(E₁)=0,80'
+          },
+          { year:'2020', section:'Teil 2 – Stochastik I', imgKey:'2020_t2_stochastik1',
+            title:'Schokolade X~Gewicht, σ-Umgebung berechnen', pts:'7 BE',
+            steps:[
+              `E(X)=99,94 (gegeben)\nVar(X)=E(X²)–E(X)²\nE(X²)=98,5²·0,05+99²·0,10+100²·0,75+101²·0,07+101,5²·0,03`,
+              `Var(X)=E(X²)–99,94²\nσ=√Var(X)`,
+              `P(|X–99,94|≤σ): Welche x-Werte liegen im Intervall [99,94–σ; 99,94+σ]?\nDie entsprechenden W'keiten addieren`
+            ],
+            result:'σ berechnen · P(in σ-Umgebung) = Summe der Wahrscheinlichkeiten im Intervall'
+          },
+        ]
+      },
+      {
+        id:'sto-binom', label:'Bernoulli &\nBinomialverteilung',
+        desc:'X~B(n;p) · P(X=k) genau · P(X≤k) höchstens · P(X≥k) mindestens · kleinstes n',
+        exams: [
+          { year:'2025', section:'Teil 2 – Stochastik I', imgKey:'2025_t2_stochastik1',
+            title:'Losbude 20% – Höchstens/Mindestens, kleinstes n', pts:'10 BE',
+            steps:[
+              `X~B(n;0,2)\nE₁ (25 Lose, ≤3): P(X≤3)=Σ P(X=k) k=0..3 ≈0,2340`,
+              `E₂ (30 Lose, >E(X)=6): P(X>6)=1–P(X≤6)≈1–0,607=0,393`,
+              `E₃ (10 Lose, genau 3 nacheinander): P=0,8⁷·0,2³·8 [8 mögliche Positionen für 3 in Folge]\noder Baumdiagramm`,
+              `P(mind. 1 Gewinn)≥0,95: 1–0,8ⁿ≥0,95 → n≥ln(0,05)/ln(0,8)≈13,4 → n=14`
+            ],
+            result:'P(E₁)≈23,4% · P(E₂)≈39,3% · n_min=14'
+          },
+          { year:'2024', section:'Teil 1 – Stochastik', imgKey:'2024_t1_stochastik', solKey:'sol_2024_t1_sto_binom',
+            title:'Einkaufstasche 80% – Terme für E₁, E₂ · Einkaufswagen p', pts:'7 BE',
+            steps:[
+              `E₁ (genau 4 von 10 MIT Tasche): P=C(10;4)·0,8⁴·0,2⁶`,
+              `E₂ (Kunden 1,2 ohne Tasche, 3-7 mit, 8 ohne):\nP=0,2·0,2·0,8⁵·0,2=0,2³·0,8⁵`,
+              `2p(1–p)=0,32 → p²–p+0,16=0 → p=(1±0,6)/2\np=0,2 oder p=0,8`,
+              `E(X)=0·0,05+1·0,45+2·0,35+3·0,15=1,60\nσ=0,8; P(0,8≤X≤2,4)=P(X=1)+P(X=2)=0,80`
+            ],
+            result:'E₁: C(10;4)·0,8⁴·0,2⁶ · E₂: 0,2³·0,8⁵ · p=0,2 oder 0,8 · P=80%'
+          },
+          { year:'2023', section:'Teil 2 – Stochastik II', imgKey:'2023_t2_stochastik2',
+            title:'Schülerinnen Breze 30%, n=20 – Erwartungswert, Standardabweichung', pts:'12 BE',
+            steps:[
+              `E₁ (nur letzte 2 kaufen Breze): P=0,7¹⁸·0,3²\nE₂ (genau 10 kaufen KEINE): P=C(20;10)·0,3¹⁰·0,7¹⁰`,
+              `E(X)=n·p=20·0,3=6\nBedeutung: Im Durchschnitt kaufen 6 von 20 eine Breze`,
+              `σ=√(20·0,3·0,7)=√4,2≈2,05\nP(E(X)–σ≤X≤E(X)+σ)=P(3,95≤X≤8,05)=P(X=4)+...+P(X=8)`,
+              `E₃ (mehr als doppelt soviel wie erwartet):\n>2·E(X)=12 → P(X>12)=P(X≥13)=1–P(X≤12)`
+            ],
+            result:'E(X)=6 · σ≈2,05 · P(in σ-Umg.) berechnen · P(X≥13)=1–P(X≤12)'
+          },
+          { year:'2022', section:'Teil 2 – Stochastik I', imgKey:'2022_t2_stochastik1',
+            title:'DSL-Anschlüsse 25 Haushalte – E₄, E₅, E₆ · Münzspiel', pts:'10 BE',
+            steps:[
+              `X~B(25;0,173): E₄ (genau 3 DSL2000): P=C(25;3)·0,173³·0,827²²`,
+              `Y~B(25;0,15): E₅ (6≤Y≤9): P(Y=6)+...+P(Y=9)`,
+              `Z~B(25;0,70): E₆ (Z<13 → <Hälfte DSL): P(Z≤12) [alle 4 Typen zusammen=70%]`,
+              `Münzspiel: P(KKK)=0,4³=0,064 → Auszahlung 20€\nP(alternierend)=2·(0,4·0,6·0,4)=0,192 → Auszahlung 10€\nE(Netto)=20·0,064+10·0,192–4·1=1,28+1,92–4=–0,8€ → ungünstig`
+            ],
+            result:'E(Netto)=–0,80€ → Spiel ungünstig für Spieler'
+          },
+          { year:'2021', section:'Teil 2 – Stochastik II', imgKey:'2021_t2_stochastik2', solKey:'sol_2021_t2_sto1_vier',
+            title:'Freizeitpark Campingplatz p=25%, n=200 – Stellplätze reichen?', pts:'6 BE',
+            steps:[
+              `X~B(200;0,25); E(X)=50, σ=√(200·0,25·0,75)=√37,5≈6,12`,
+              `a) P(nicht ausreichend): P(X>50)=1–P(X≤50)≈0,5 (ca. 50%, da 50=E(X))\nGenauer: P(X≥51)=1–P(X≤50)`,
+              `b) P(E–σ≤X≤E+σ)=P(43,88≤X≤56,12)=P(44≤X≤56)\n=Σ P(X=k) k=44..56`
+            ],
+            result:'P(X>50)≈50% · P(43≤X≤57) aus Binomialtabelle'
+          },
+          { year:'2020', section:'Teil 2 – Stochastik II', imgKey:'2020_t2_stochastik2',
+            title:'Kleemischung Keimwahrscheinlichkeit 85% – Baumdiagramm & B(200;0,85)', pts:'9 BE',
+            steps:[
+              `P(K)=P(K|W)·P(W)+P(K|R)·P(R)=0,925·p+0,8·(1–p)=0,85\n0,925p+0,8–0,8p=0,85 → 0,125p=0,05 → p=0,4\nMischung: 40% Weißklee, 60% Rotklee`,
+              `Y~B(200;0,85): E(Y)=170, σ=√(200·0,85·0,15)=√25,5≈5,05\nP(E–σ≤Y≤E+σ)=P(164,95≤Y≤175,05)=P(165≤Y≤175)`
+            ],
+            result:'Mischung: 40% Weißklee · P(165≤Y≤175) berechnen'
+          },
+        ]
+      },
+      {
+        id:'sto-hyp', label:'Hypothesen- &\nSignifikanztest',
+        desc:'H₀ und H₁ formulieren · kritischen Bereich · Fehler 1. und 2. Art · Signifikanzniveau',
+        exams: [
+          { year:'2025', section:'Teil 2 – Stochastik II', imgKey:'2025_t2_stochastik2',
+            title:'Heimtierbedarf 80% stationär – Hypothesentest linksseitig n=200', pts:'5 BE',
+            steps:[
+              `H₀: p≥0,8 (Anteil stationär bleibt mind. 80%)\nH₁: p<0,8 (Anteil sinkt) → linksseitiger Test`,
+              `X~B(200;0,8) unter H₀, α=5%\nP(X≤k)≤0,05: gesucht größtes k\nP(X≤148)≈... → aus Tabelle/TR`,
+              `Wenn 152 von 200 stationär → x=152 ∈ K? Entscheidung treffen`
+            ],
+            result:'H₀: p≥0,8 · linksseitiger Test · kritischer Bereich K={X≤k} · Entscheidung bei x=152'
+          },
+          { year:'2024', section:'Teil 2 – Stochastik I', imgKey:'2024_t2_stochastik1', solKey:'sol_2024_t2_sto1_binom',
+            title:'Fanshop GREEN-Label – Hypothesentest linksseitig n=100, α=5%', pts:'5 BE',
+            steps:[
+              `H₀: p≥0,8 (mind. 80% akzeptieren)\nH₁: p<0,8 (Gegenhypothese: weniger) → linksseitiger Test`,
+              `X~B(100;0,8) unter H₀\nP(X≤k)≤0,05: k=?`,
+              `Bei x=75: 75 ∈ K? → Entscheidung ob H₀ abgelehnt`
+            ],
+            result:'H₀ abgelehnt oder nicht abhängig von kritischem Bereich'
+          },
+          { year:'2023', section:'Teil 2 – Stochastik II', imgKey:'2023_t2_stochastik2',
+            title:'E-Auto Parkplatz 5% – Hypothesentest', pts:'aus Teil 2',
+            steps:[
+              `H₀: p≤0,05, H₁: p>0,05\nX~B(100;0,05): P(X≥k)≤0,05`,
+              `Finde k so dass P(X≥k)≤5%`
+            ],
+            result:'Kritischer Bereich bestimmen und Entscheidung treffen'
+          },
+          { year:'2022', section:'Teil 2 – Stochastik II', imgKey:'2022_t2_stochastik2',
+            title:'Tulpenzwiebeln p=0,85 – P(X≥29), Aussage prüfen', pts:'4 BE',
+            steps:[
+              `X~B(30;0,85)\nP(X≥29)=P(X=29)+P(X=30)\n=C(30;29)·0,85²⁹·0,15+0,85³⁰`,
+              `P(X≥29)≈0,1287+0,0076=0,1363\nAussage: Für 1≤k≤29 gilt P(X≥k)≥4%?\nFür k=29: P≈13,6%>4% ✓\nFür k=28: P(X≥28)=... auch >4%\n→ Aussage ist WAHR`
+            ],
+            result:'P(X≥29)≈13,6% · Aussage für alle k∈[1;29]: P(X≥k)≥4% ist WAHR'
+          },
+          { year:'2021', section:'Teil 2 – Stochastik II', imgKey:'2021_t2_stochastik2', solKey:'sol_2021_t2_sto2_vier',
+            title:'Freizeitpark Binomialtest – Vierfeldertafel bedingte W.', pts:'6 BE',
+            steps:[
+              `Vierfeldertafel: 200 Kunden, U=80, L=72\nL∩U=25, L∩Ū=47\nL̄∩U=55, L̄∩Ū=73`,
+              `P(Ū∩L̄)=73/200=0,365`,
+              `P_U(L̄)=55/80=0,6875; P_Ū(L̄)=73/120≈0,608\nP_U(L̄)>P_Ū(L̄): Kunden aus Umkreis holen Möbel häufiger selbst ab`
+            ],
+            result:'P(Ū∩L̄)=0,365 · P_U(L̄)=0,6875 > P_Ū(L̄)≈0,608'
+          },
+          { year:'2020', section:'Teil 2 – Stochastik II', imgKey:'2020_t2_stochastik2',
+            title:'Blumensamen 90% keimen – Hypothesentest linksseitig α=4%', pts:'7 BE',
+            steps:[
+              `H₀: p≥0,9 (mind. 90% keimen)\nH₁: p<0,9 (weniger, Vermutung Gärtnerin) → linksseitiger Test`,
+              `X~B(100;0,9) unter H₀, α=4%\nP(X≤k)≤0,04: k=83 (P(X≤83)≈0,033<0,04)\nK={0,1,...,83}`,
+              `Bei x=87: 87∉K → H₀ wird NICHT abgelehnt\nFehler 2. Art bei p=0,85: P(X>83|p=0,85)=1–P(X≤83|B(100;0,85))`
+            ],
+            result:'K={X≤83} · Bei x=87: H₀ nicht abgelehnt · Fehler 2. Art bei p=0,85 berechnen'
+          },
+        ]
+      },
+    ]
+  }
+];
+
+// ══════════════════════════════════════════════════════════════
+//  PDF DOWNLOAD LINKS – Hügel-Schule (Aufgaben + Lösungen)
+// ══════════════════════════════════════════════════════════════
+const PDF_LINKS = {
+  "2025": {
+    label: "Fachabitur 2025",
+    combined: "https://huegel-schule.de/wp-content/uploads/2026/04/2025-FOS-Fachabitur-Bayern.pdf",
+  },
+  "2024": {
+    label: "Fachabitur 2024",
+    combined: "https://huegel-schule.de/wp-content/uploads/2025/05/2024-FOS-Abi-Bayern-save.pdf",
+  },
+  "2023": {
+    label: "Fachabitur 2023",
+    combined: "https://huegel-schule.de/wp-content/uploads/2025/05/2023-FOS-Abi-Bayern.pdf",
+  },
+  "2022": {
+    label: "Fachabitur 2022",
+    combined: "https://huegel-schule.de/wp-content/uploads/2023/05/2022-FOS-Abi-Bayern.pdf",
+  },
+  "2021": {
+    label: "Fachabitur 2021",
+    combined: "https://huegel-schule.de/wp-content/uploads/2023/05/2021-FOS-Abi-Bayern.pdf",
+  },
+  "2020": {
+    label: "Fachabitur 2020",
+    aufgaben: "https://huegel-schule.de/wp-content/uploads/2020/05/2020-ABI-FOS_BOS-NT-Angabe-Links.pdf",
+  },
+};
+
+
+const VIDEOS = {
+  "2025": {
+    "t1": { label:"Teil 1 – ohne Hilfsmittel", url:"https://www.youtube.com/watch?v=0Bhx0jf4zeI" },
+    "t2_analysis1": { label:"Teil 2 – Analysis I", url:"https://www.youtube.com/watch?v=0Bhx0jf4zeI" },
+    "t2_analysis2": { label:"Teil 2 – Analysis II", url:"https://www.youtube.com/watch?v=0Bhx0jf4zeI" },
+    "t2_stochastik": { label:"Teil 2 – Stochastik", url:"https://www.youtube.com/watch?v=0Bhx0jf4zeI" },
+  },
+  "2024": {
+    "t1": { label:"Teil 1 – ohne Hilfsmittel", url:"https://www.youtube.com/watch?v=xvQ48dlaVic" },
+    "t2_analysis1": { label:"Teil 2 – Analysis I", url:"https://www.youtube.com/watch?v=xvQ48dlaVic" },
+    "t2_analysis2": { label:"Teil 2 – Analysis II", url:"https://www.youtube.com/watch?v=xvQ48dlaVic" },
+    "t2_stochastik": { label:"Teil 2 – Stochastik", url:"https://www.youtube.com/watch?v=xvQ48dlaVic" },
+  },
+  "2023": {
+    "t1": { label:"Teil 1 – ohne Hilfsmittel", url:"https://www.youtube.com/watch?v=BlojbSJ4iYM" },
+    "t2_analysis1": { label:"Teil 2 – Analysis I", url:"https://www.youtube.com/watch?v=tWGjI3XjydA" },
+    "t2_stochastik": { label:"Teil 2 – Stochastik", url:"https://www.youtube.com/watch?v=Xtb0uzNa2Xw" },
+  },
+  "2022": {
+    "t1": { label:"Teil 1 – ohne Hilfsmittel", url:"https://www.youtube.com/watch?v=BlojbSJ4iYM" },
+    "t2_analysis1": { label:"Teil 2 – Analysis I", url:"https://www.youtube.com/watch?v=tWGjI3XjydA" },
+    "t2_stochastik": { label:"Teil 2 – Stochastik", url:"https://www.youtube.com/watch?v=9IuQz-Gw9y0" },
+  },
+  "2021": {
+    "t1": { label:"Teil 1 – ohne Hilfsmittel", url:"https://www.youtube.com/watch?v=AjieZk6lnxE" },
+    "t2_analysis1": { label:"Teil 2 – Analysis I", url:"https://www.youtube.com/watch?v=0acBTb-KIjM" },
+    "t2_analysis2": { label:"Teil 2 – Analysis II", url:"https://www.youtube.com/watch?v=yq7H1KP1Nd4" },
+    "t2_stochastik": { label:"Teil 2 – Stochastik", url:"https://www.youtube.com/watch?v=Qp_Z7on37os" },
+  },
+  "2020": {
+    "t1": { label:"Teil 1 – ohne Hilfsmittel", url:"https://www.youtube.com/watch?v=fC_HIg4s3RQ" },
+    "t2_analysis1": { label:"Teil 2 – Analysis I", url:"https://www.youtube.com/watch?v=R_nnrhvmGj8" },
+    "t2_analysis2": { label:"Teil 2 – Analysis II", url:"https://www.youtube.com/watch?v=JtDxf9_eAhI" },
+    "t2_stochastik1": { label:"Teil 2 – Stochastik I", url:"https://www.youtube.com/watch?v=M4W2shRuYYE" },
+    "t2_stochastik2": { label:"Teil 2 – Stochastik II", url:"https://www.youtube.com/watch?v=wcDW6bbRjVg" },
+  },
+};
+
+// Map exam imgKey → solution image key (only where we have real PDF solutions)
+const SOL_KEY_MAP = {
+  // 2021
+  "2021_t1_analysis":    "sol_2021_t1_analysis",
+  "2021_t1_stochastik":  "sol_2021_t1_stochastik",
+  "2021_t2_analysis1":   "sol_2021_t2_analysis1",
+  "2021_t2_analysis2":   "sol_2021_t2_analysis2",
+  "2021_t2_stochastik1": "sol_2021_t2_stochastik1",
+  "2021_t2_stochastik2": "sol_2021_t2_stochastik2",
+  // 2024
+  "2024_t1_analysis":    "sol_2024_t1_analysis",
+  "2024_t1_stochastik":  "sol_2024_t1_stochastik",
+  "2024_t2_analysis1":   "sol_2024_t2_analysis1",
+  "2024_t2_analysis2":   "sol_2024_t2_analysis2",
+  "2024_t2_stochastik1": "sol_2024_t2_stochastik1",
+  "2024_t2_stochastik2": "sol_2024_t2_stochastik2",
+};
+
+// Get video key from exam section string
+function getVideoKey(section, year) {
+  const s = section.toLowerCase();
+  if (s.includes('teil 1')) return 't1';
+  if (s.includes('analysis i') || s.includes('analysis i ')) return 't2_analysis1';
+  if (s.includes('analysis ii') || s.includes('analysis ii ')) return 't2_analysis2';
+  if (s.includes('stochastik i') && !s.includes('ii')) return year==='2020' ? 't2_stochastik1' : 't2_stochastik';
+  if (s.includes('stochastik ii')) return year==='2020' ? 't2_stochastik2' : 't2_stochastik';
+  if (s.includes('stochastik')) return 't2_stochastik';
+  return 't1';
+}
+
+
+let state = { view:'map', branch:null, topic:null };
+
+function getCenter() {
+  const m = document.getElementById('map');
+  return { x: m.offsetWidth/2, y: m.offsetHeight/2 };
+}
+
+// Store nodes with their DOM element, position, and the line they're attached to
+const nodes = [];
+// Each node: {type:'center'|'branch'|'topic', el, x, y, parentNode, line, branch, topic}
+
+function buildMap() {
+  const map = document.getElementById('map');
+  const svg = document.getElementById('lines');
+  const c = getCenter();
+  const w = map.offsetWidth;
+  const h = map.offsetHeight;
+
+  // Clear all
+  document.querySelectorAll('.node-branch,.node-topic').forEach(n=>n.remove());
+  svg.innerHTML='';
+  nodes.length = 0;
+
+  // Center node
+  const centerEl = document.querySelector('.node-center');
+  centerEl.style.left = c.x + 'px';
+  centerEl.style.top = c.y + 'px';
+  const centerNode = { type:'center', el:centerEl, x:c.x, y:c.y };
+  nodes.push(centerNode);
+
+  // ── STAR LAYOUT ──
+  // Analysis on the left half, Stochastik on the right half.
+  // The two branch nodes are placed slightly left/right of center,
+  // and each branch's topics fan out in a wide half-circle around it.
+
+  // Scale branch distance with viewport so nothing gets cut off
+  const branchDist = Math.min(180, w * 0.18);
+  const topicDist  = Math.min(230, Math.min(w, h) * 0.32);
+
+  TREE.forEach((branch, bi) => {
+    // Branch node: Analysis at 180° (left), Stochastik at 0° (right)
+    const branchAngle = (bi === 0) ? 180 : 0;
+    const bRad = branchAngle * Math.PI / 180;
+    const bx = c.x + Math.cos(bRad) * branchDist;
+    const by = c.y;
+
+    // Line from center to branch
+    const centerLine = document.createElementNS('http://www.w3.org/2000/svg','line');
+    centerLine.setAttribute('class','line-center');
+    svg.appendChild(centerLine);
+
+    // Branch DOM
+    const bn = document.createElement('div');
+    bn.className = `node-branch ${branch.cls}`;
+    bn.innerHTML = `<div class="nb-inner">${branch.label.replace('\n','<br>')}</div>`;
+    map.appendChild(bn);
+
+    const branchNode = {
+      type:'branch', el:bn, x:bx, y:by,
+      parentNode: centerNode, line: centerLine,
+      branch
+    };
+    nodes.push(branchNode);
+    attachInteractions(bn, branchNode, ()=>openBranch(branch));
+
+    // ── Topics in a half-circle around the branch ──
+    // Analysis (left branch): topics fan from 90° (top) through 180° (far left) to 270° (bottom)
+    // Stochastik (right branch): topics fan from 270° (bottom) through 0° (far right) to 90° (top)
+    //   — we use the range that points AWAY from the center.
+    const n = branch.topics.length;
+    // Full fan angle: how wide the half-circle opens.
+    const fanAngle = 180; // 180° = perfect half-circle on the outward side
+    // Start angle is branchAngle - fanAngle/2
+    const startAng = branchAngle - fanAngle/2;
+    // Angular step between topics (with padding so first and last don't touch the vertical axis)
+    const step = n > 1 ? fanAngle / (n - 1) : 0;
+
+    branch.topics.forEach((topic, ti) => {
+      const angDeg = (n === 1) ? branchAngle : startAng + ti * step;
+      const angRad = angDeg * Math.PI / 180;
+      let tx = bx + Math.cos(angRad) * topicDist;
+      let ty = by + Math.sin(angRad) * topicDist;
+
+      // Clamp to viewport with padding
+      const pad = 95;
+      tx = Math.max(pad, Math.min(tx, w - pad));
+      ty = Math.max(40, Math.min(ty, h - 40));
+
+      const topicLine = document.createElementNS('http://www.w3.org/2000/svg','line');
+      topicLine.setAttribute('class',`line-topic line-${branch.cls}`);
+      svg.appendChild(topicLine);
+
+      const tn = document.createElement('div');
+      tn.className = `node-topic ${branch.cls}`;
+      tn.innerHTML = `<div class="nt-inner">${topic.label.replace('\n','<br>')}
+        <span class="nt-count">${topic.exams.length} Prüfungen</span></div>`;
+      map.appendChild(tn);
+
+      const topicNode = {
+        type:'topic', el:tn, x:tx, y:ty,
+        parentNode: branchNode, line: topicLine,
+        branch, topic
+      };
+      nodes.push(topicNode);
+      attachInteractions(tn, topicNode, ()=>openTopic(branch, topic));
+    });
+  });
+
+  // Initial render of positions + lines
+  renderAll();
+}
+
+// Update DOM positions from node state + redraw SVG lines
+function renderAll() {
+  nodes.forEach(node => {
+    if (node.el) {
+      node.el.style.left = node.x + 'px';
+      node.el.style.top  = node.y + 'px';
+    }
+    if (node.line && node.parentNode) {
+      node.line.setAttribute('x1', node.parentNode.x);
+      node.line.setAttribute('y1', node.parentNode.y);
+      node.line.setAttribute('x2', node.x);
+      node.line.setAttribute('y2', node.y);
+    }
+  });
+}
+
+// ── DRAG + CLICK interaction ──
+// Distinguish a click (< 5px movement) from a drag.
+// On drag: update node.x/y, re-render lines, never fire click handler.
+// On click: fire the onClick callback (open panel).
+function attachInteractions(el, node, onClick) {
+  let isDragging = false;
+  let moved = false;
+  let startX = 0, startY = 0;
+  let origX = 0, origY = 0;
+
+  const onPointerDown = (ev) => {
+    // Only left-button / primary pointer
+    if (ev.button !== undefined && ev.button !== 0) return;
+    isDragging = true;
+    moved = false;
+    const p = getPointer(ev);
+    startX = p.x; startY = p.y;
+    origX = node.x; origY = node.y;
+    el.style.zIndex = 999;
+    el.style.transition = 'none'; // disable CSS transitions while dragging
+    // Capture pointer so we keep receiving events
+    if (el.setPointerCapture && ev.pointerId !== undefined) {
+      try { el.setPointerCapture(ev.pointerId); } catch(e){}
+    }
+    ev.preventDefault();
+  };
+
+  const onPointerMove = (ev) => {
+    if (!isDragging) return;
+    const p = getPointer(ev);
+    const dx = p.x - startX;
+    const dy = p.y - startY;
+    if (!moved && (Math.abs(dx) > 4 || Math.abs(dy) > 4)) {
+      moved = true;
+      el.classList.add('dragging');
+    }
+    if (moved) {
+      const map = document.getElementById('map');
+      const w = map.offsetWidth, h = map.offsetHeight;
+      // Keep node inside the map area
+      node.x = Math.max(20, Math.min(origX + dx, w - 20));
+      node.y = Math.max(20, Math.min(origY + dy, h - 20));
+      renderAll();
+    }
+  };
+
+  const onPointerUp = (ev) => {
+    if (!isDragging) return;
+    isDragging = false;
+    el.style.zIndex = '';
+    el.style.transition = '';
+    el.classList.remove('dragging');
+    if (el.releasePointerCapture && ev.pointerId !== undefined) {
+      try { el.releasePointerCapture(ev.pointerId); } catch(e){}
+    }
+    // If the node didn't move, treat it as a click
+    if (!moved && onClick) {
+      onClick();
+    }
+    moved = false;
+  };
+
+  // Use pointer events for unified mouse+touch handling
+  el.addEventListener('pointerdown', onPointerDown);
+  el.addEventListener('pointermove', onPointerMove);
+  el.addEventListener('pointerup', onPointerUp);
+  el.addEventListener('pointercancel', onPointerUp);
+}
+
+function getPointer(ev) {
+  if (ev.touches && ev.touches[0]) return { x: ev.touches[0].clientX, y: ev.touches[0].clientY };
+  return { x: ev.clientX, y: ev.clientY };
+}
+
+// ── PANEL ──
+function setPH(title,bread,cls){
+  document.getElementById('p-title').textContent=title;
+  document.getElementById('p-bread').textContent=bread;
+  document.getElementById('p-accent').className=`panel-accent ${cls}`;
+}
+
+function openBranch(branch){
+  state={view:'branch',branch,topic:null};
+  setPH(branch.label.replace('\n',' '),'Mathematik FOS 12',branch.cls);
+  document.getElementById('btn-back').style.display='none';
+  let html='';
+  branch.topics.forEach(t=>{
+    html+=`<div class="year-header">${t.label.replace('\n',' ')}</div>`;
+    html+=`<p class="topic-intro">${t.desc}</p>`;
+    t.exams.forEach(e=>{
+      html+=examCard(e,branch,t);
+    });
+  });
+  document.getElementById('p-body').innerHTML=html;
+  openPanel();
+}
+
+function openTopic(branch,topic){
+  state={view:'topic',branch,topic};
+  setPH(topic.label.replace('\n',' '),branch.label.replace('\n',' '),branch.cls);
+  document.getElementById('btn-back').style.display='none';
+  let html=`<p class="topic-intro">${topic.desc}</p>`;
+  const years=['2025','2024','2023','2022','2021','2020'];
+  years.forEach(yr=>{
+    const exs=topic.exams.filter(e=>e.year===yr);
+    if(!exs.length)return;
+    html+=`<div class="year-header">Abitur ${yr}</div>`;
+    exs.forEach(e=>{ html+=examCard(e,branch,topic); });
+  });
+  document.getElementById('p-body').innerHTML=html;
+  openPanel();
+}
+
+function examCard(e,branch,topic){
+  const key=JSON.stringify({bid:branch.id,tid:topic.id,ey:e.year});
+  return `<div class="exam-card ${branch.cls} anim" onclick='openExam(${JSON.stringify(key)})'>
+    <div class="ec-label">${e.title}</div>
+    <div class="ec-sub">${e.section} · ${e.pts}</div>
+    <span class="ec-arrow">→</span>
+  </div>`;
+}
+
+function openExam(keyStr){
+  const {bid,tid,ey}=JSON.parse(keyStr);
+  const branch=TREE.find(b=>b.id===bid);
+  const topic=branch.topics.find(t=>t.id===tid);
+  const exam=topic.exams.find(e=>e.year===ey);
+
+  state={view:'exam',branch,topic,exam};
+  setPH(exam.title, `${exam.year} · ${exam.section}`, branch.cls);
+  document.getElementById('btn-back').style.display='flex';
+
+  // ── Aufgaben-Bilder ──
+  const imgs = (typeof EXAM_IMAGES !== 'undefined' && EXAM_IMAGES[exam.imgKey]) || [];
+  const imgHTML = imgs.length
+    ? `<div class="page-images">${imgs.map(src=>`<img class="page-img" src="${src}" loading="lazy">`).join('')}</div>`
+    : `<div class="no-img-box">📄 ${exam.year} – ${exam.section}</div>`;
+
+  // ── Video-Button ──
+  const vkey = getVideoKey(exam.section, exam.year);
+  const vidEntry = VIDEOS[exam.year] && VIDEOS[exam.year][vkey];
+  const videoBtn = vidEntry
+    ? `<a class="video-btn" href="${vidEntry.url}" target="_blank" rel="noopener">
+         <span class="vbtn-icon">▶</span>
+         <span>Lösungsvideo – ${vidEntry.label}</span>
+         <span class="vbtn-ext">↗</span>
+       </a>`
+    : '';
+
+  // ── PDF-Link ──
+  const pdfEntry = PDF_LINKS[exam.year];
+  const pdfUrl = pdfEntry && (pdfEntry.combined || pdfEntry.aufgaben);
+  const pdfBtn = pdfUrl
+    ? `<a class="pdf-btn" href="${pdfUrl}" target="_blank" rel="noopener">
+         <span class="pbtn-icon">📄</span>
+         <span>Original PDF – ${pdfEntry.label}</span>
+         <span class="vbtn-ext">↗</span>
+       </a>`
+    : '';
+
+  // ── Lösung bestimmen: SOL_PRECISE > SOL_IMAGES > typed steps ──
+  const preciseKey = exam.solKey;
+  const preciseImgs = (typeof SOL_PRECISE !== 'undefined' && preciseKey && SOL_PRECISE[preciseKey]) || [];
+  const sectionImgKey = SOL_KEY_MAP[exam.imgKey];
+  const sectionImgs = (typeof SOL_IMAGES !== 'undefined' && sectionImgKey && SOL_IMAGES[sectionImgKey]) || [];
+
+  let solutionContent = '';
+  let solLabel = '';
+
+  if (preciseImgs.length) {
+    // Best: exact task solution pages from PDF
+    solLabel = `Lösung (Original PDF ${exam.year})`;
+    solutionContent = `<div class="sol-images">${preciseImgs.map(s=>`<img class="page-img" src="${s}" loading="lazy">`).join('')}</div>`;
+  } else if (sectionImgs.length) {
+    // OK: full section solution
+    solLabel = `Lösung ${exam.year} – ${exam.section}`;
+    solutionContent = `<div class="sol-images">${sectionImgs.map(s=>`<img class="page-img" src="${s}" loading="lazy">`).join('')}</div>`;
+  } else {
+    // Fallback: typed steps
+    solLabel = 'Schritt-für-Schritt Lösung';
+    const stepsHTML = exam.steps.map((s,i)=>`
+      <div class="sol-step">
+        <div class="sol-n ${branch.cls}">${i+1}</div>
+        <div class="sol-text">${s}</div>
+      </div>`).join('');
+    solutionContent = `${stepsHTML}<div class="result-box ${branch.cls}">${exam.result}</div>`;
+  }
+
+  document.getElementById('p-body').innerHTML=`
+    <div class="exam-view-header anim">
+      <div class="ev-year">Fachabitur Bayern ${exam.year} – Nichttechnik</div>
+      <div class="ev-title">${exam.title}</div>
+      <div class="ev-topic">${exam.section} · ${exam.pts}</div>
+    </div>
+    <div class="action-row">
+      ${videoBtn}${pdfBtn}
+    </div>
+    ${imgHTML}
+    <button class="solution-toggle ${branch.cls}" onclick="toggleSolution(this)">
+      ▶ ${solLabel}
+    </button>
+    <div class="solution-box">
+      <div class="sol-label">${solLabel}</div>
+      ${solutionContent}
+    </div>`;
+}
+
+function toggleSolution(btn){
+  const box=btn.nextElementSibling;
+  box.classList.toggle('open');
+  btn.textContent=box.classList.contains('open') ? '▼ Lösung ausblenden' : '▶ Lösung anzeigen';
+}
+
+function goBack(){
+  if(state.view==='exam') openTopic(state.branch,state.topic);
+  else if(state.view==='topic') openBranch(state.branch);
+}
+
+function openYearOverview() {
+  state = {view:'overview'};
+  setPH('Alle Prüfungsjahre', 'FOS 12 Bayern – Nichttechnik', 'ana');
+  document.getElementById('btn-back').style.display='none';
+
+  const years = ['2025','2024','2023','2022','2021','2020'];
+  let html = `<p class="topic-intro" style="margin-bottom:16px">Originalprüfungen mit Lösungen (PDF) und Lösungsvideos der Hügel-Schule. Klick auf die Knotenpunkte in der Mindmap für einzelne Aufgaben.</p>`;
+
+  years.forEach(yr => {
+    const p = PDF_LINKS[yr];
+    if (!p) return;
+    const v = VIDEOS[yr];
+    html += `<div class="year-ov-card">
+      <div class="year-ov-title">📋 ${p.label}</div>
+      <div class="year-ov-links">`;
+    if (p.combined)
+      html += `<a class="year-ov-pdf" href="${p.combined}" target="_blank" rel="noopener">📄 Angabe + Lösungen ↗</a>`;
+    if (p.aufgaben)
+      html += `<a class="year-ov-pdf" href="${p.aufgaben}" target="_blank" rel="noopener">📄 Angabe ↗</a>`;
+    if (v) Object.values(v).forEach(vid =>
+      html += `<a class="year-ov-vid" href="${vid.url}" target="_blank" rel="noopener">▶ ${vid.label} ↗</a>`
+    );
+    html += `</div></div>`;
+  });
+
+  document.getElementById('p-body').innerHTML = html;
+  openPanel();
+}
+
+
+
+function openPanel(){
+  document.getElementById('panel').classList.add('open');
+  document.getElementById('overlay').classList.add('on');
+  document.getElementById('p-body').scrollTop=0;
+}
+
+function closePanel(){
+  document.getElementById('panel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('on');
+  state={view:'map'};
+}
+
+window.addEventListener('load',()=>{
+  buildMap();
+  // Only rebuild on large resize events; otherwise users lose their arrangement
+  let lastW = window.innerWidth, lastH = window.innerHeight;
+  window.addEventListener('resize', ()=>{
+    if (Math.abs(window.innerWidth - lastW) > 150 || Math.abs(window.innerHeight - lastH) > 150) {
+      lastW = window.innerWidth; lastH = window.innerHeight;
+      buildMap();
+    }
+  });
+});
+</script>
+</body>
+</html>
